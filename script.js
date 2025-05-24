@@ -425,11 +425,22 @@ function exportNoteToPDF() {
     titleElement.style.color = '#000';
     titleElement.style.marginBottom = '20px';
     titleElement.style.fontSize = '24px';
+    // --- Start of changes for heading placement ---
+    titleElement.style.display = 'block';
+    titleElement.style.textAlign = 'center';
+    titleElement.style.width = '100%';
+    // --- End of changes for heading placement ---
 
     const contentWrapper = document.createElement('div');
     contentWrapper.innerHTML = noteContentHTML;
     contentWrapper.style.color = '#000';
     contentWrapper.style.fontSize = '12px';
+    // --- Start of changes for content pagination ---
+    contentWrapper.style.overflowWrap = 'break-word';
+    contentWrapper.style.wordWrap = 'break-word';
+    // Ensure content can break (though html2pdf's pagebreak mode is primary)
+    contentWrapper.style.pageBreakInside = 'auto'; 
+    // --- End of changes for content pagination ---
 
     // Ensure all child elements within contentWrapper also have black text color
     contentWrapper.querySelectorAll('*').forEach(el => {
@@ -445,7 +456,10 @@ function exportNoteToPDF() {
         filename: filename,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        // --- Start of changes for jsPDF options and pagebreak ---
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', autoPaging: 'text' },
+        pagebreak: { mode: ['css', 'legacy'] }
+        // --- End of changes for jsPDF options and pagebreak ---
     };
 
     exportPdfBtn.disabled = true;
