@@ -636,51 +636,64 @@ function exportNoteToPDF() {
     }
 
     const elementToPrint = document.createElement('div');
-    // Apply A4-like dimensions and essential styling for layout
+    // --- Styling for elementToPrint (the "page") ---
     elementToPrint.style.width = '210mm'; // A4 width
-    elementToPrint.style.padding = '15mm'; // Page margins
-    elementToPrint.style.backgroundColor = '#ffffff'; // Ensure white background
+    elementToPrint.style.padding = '15mm'; // Page margins inside the white "page"
+    elementToPrint.style.backgroundColor = '#ffffff';
     elementToPrint.style.boxSizing = 'border-box';
-    elementToPrint.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"; // Consistent font
+    elementToPrint.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+    elementToPrint.style.height = 'auto'; // Let content define height
+    elementToPrint.style.overflow = 'visible'; // Let html2pdf handle page breaks
 
     const titleElement = document.createElement('h1');
     titleElement.textContent = noteTitle || "Untitled Note";
-    // Styling for title
-    titleElement.style.color = '#000000'; // Black
-    titleElement.style.fontSize = '20px'; 
+    // --- Styling for titleElement ---
+    titleElement.style.color = '#000000';
+    titleElement.style.fontSize = '22px'; // Slightly larger
+    titleElement.style.fontWeight = 'bold'; // Ensure boldness
     titleElement.style.lineHeight = '1.4';
-    titleElement.style.marginBottom = '10mm'; // Space after title
+    titleElement.style.marginBottom = '10mm';
+    titleElement.style.padding = '0'; // Reset padding for h1
     titleElement.style.wordBreak = 'break-word';
-    titleElement.style.textAlign = 'center'; // Center title
+    titleElement.style.textAlign = 'center';
+    // No height or max-height on titleElement
 
     const contentWrapper = document.createElement('div');
-    contentWrapper.innerHTML = noteContentHTML; // Set content even if empty
-    // Styling for content
-    contentWrapper.style.color = '#333333'; // Dark Gray
+    contentWrapper.innerHTML = noteContentHTML;
+    // --- Styling for contentWrapper ---
+    contentWrapper.style.color = '#333333';
     contentWrapper.style.fontSize = '12px';
     contentWrapper.style.lineHeight = '1.6';
-    contentWrapper.style.whiteSpace = 'pre-wrap'; // Respect line breaks and spacing
+    contentWrapper.style.whiteSpace = 'pre-wrap'; // Crucial for preserving formatting
     contentWrapper.style.wordBreak = 'break-word';
-    contentWrapper.style.textAlign = 'left'; // Default alignment for content
+    contentWrapper.style.textAlign = 'left';
+    contentWrapper.style.display = 'block'; // Ensure it takes up space
+    contentWrapper.style.minHeight = '10mm'; // Give it some minimum height if content is very short or empty
 
     elementToPrint.appendChild(titleElement);
-    elementToPrint.appendChild(contentWrapper); // Always append
+    elementToPrint.appendChild(contentWrapper);
 
-    // For debugging: Temporarily append to body to see what's being rendered
-    // document.body.appendChild(elementToPrint); 
-    // setTimeout(() => { if (elementToPrint.parentElement === document.body) document.body.removeChild(elementToPrint); }, 5000);
-
+    // Visual debugging (conceptual - this code would be temporary during actual debugging)
+    /*
+    elementToPrint.style.position = 'fixed';
+    elementToPrint.style.top = '10px'; elementToPrint.style.left = '10px';
+    elementToPrint.style.border = '3px solid red'; elementToPrint.style.zIndex = '10000';
+    elementToPrint.style.maxHeight = '90vh'; // For viewport scrolling
+    elementToPrint.style.overflow = 'auto'; // For viewport scrolling
+    document.body.appendChild(elementToPrint);
+    // setTimeout(() => { if (elementToPrint.parentElement) elementToPrint.remove(); }, 8000);
+    */
 
     const filename = (noteTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase() || "note") + ".pdf";
     const opt = {
-        margin: 0, // Margins are now handled by elementToPrint's padding
+        margin: 0, // Margins are handled by elementToPrint's padding
         filename: filename,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
             scale: 2, 
             useCORS: true, 
-            logging: true, // Enable logging for debugging
-            backgroundColor: '#ffffff' // Ensure canvas background is white
+            logging: false, // Set to false for final version
+            backgroundColor: '#ffffff'
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
