@@ -185,11 +185,34 @@ newNoteBtn.addEventListener('click', () => {
 noteTitleInput.addEventListener('input', handleEditorInput);
 noteContentEditor.addEventListener('input', handleEditorInput);
 
+// --- Date and Time Display ---
+function updateDateTimeDisplay() {
+    const dateTimeContainer = document.getElementById('datetime-container');
+    if (!dateTimeContainer) {
+        console.warn("Date-time container not found in the DOM.");
+        return; 
+    }
+
+    const now = new Date();
+    const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit' }; // Omitting seconds
+
+    try {
+        const formattedDate = now.toLocaleDateString(undefined, dateOptions);
+        const formattedTime = now.toLocaleTimeString(undefined, timeOptions);
+        dateTimeContainer.textContent = `${formattedDate} | ${formattedTime}`;
+    } catch (error) {
+        console.error("Error formatting date or time:", error);
+        dateTimeContainer.textContent = "Could not load date/time";
+    }
+}
 
 // --- Initial Load ---
 // Ensure DOM is fully loaded before trying to access elements, especially for `loadNotes`.
 document.addEventListener('DOMContentLoaded', async () => {
     loadNotes();
+    updateDateTimeDisplay(); // Initial call to display date/time
+    setInterval(updateDateTimeDisplay, 60000); // Update every minute
 
     if (typeof tsParticles !== 'undefined') {
         try {
@@ -513,35 +536,58 @@ function exportNoteToPDF() {
     const noteTitle = noteTitleInput.value.trim();
     const noteContentHTML = noteContentEditor.innerHTML.trim();
 
-    if ((!currentNoteId && (!noteTitle && !noteContentHTML)) || (currentNoteId && !noteTitle && !noteContentHTML)) {
-        alert("No note selected or the current note is empty.");
+    if (!noteTitle && !noteContentHTML) { // Simplified check: if both are empty
+        alert("The note is empty. Nothing to export.");
         return;
     }
 
     const elementToPrint = document.createElement('div');
+    // Apply A4-like dimensions and essential styling for layout
+    elementToPrint.style.width = '210mm'; // A4 width
+    elementToPrint.style.padding = '15mm'; // Page margins
+    elementToPrint.style.backgroundColor = '#ffffff'; // Ensure white background
+    elementToPrint.style.boxSizing = 'border-box';
+    elementToPrint.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"; // Consistent font
+
     const titleElement = document.createElement('h1');
-    titleElement.textContent = noteTitle || "Untitled Note"; // Provide a default if title is empty
+    titleElement.textContent = noteTitle || "Untitled Note";
+    // Styling for title
+    titleElement.style.color = '#000000'; // Black
+    titleElement.style.fontSize = '20px'; 
+    titleElement.style.lineHeight = '1.4';
+    titleElement.style.marginBottom = '10mm'; // Space after title
+    titleElement.style.wordBreak = 'break-word';
+    titleElement.style.textAlign = 'center'; // Center title
+
     const contentWrapper = document.createElement('div');
-    contentWrapper.innerHTML = noteContentHTML;
+    contentWrapper.innerHTML = noteContentHTML; // Set content even if empty
+    // Styling for content
+    contentWrapper.style.color = '#333333'; // Dark Gray
+    contentWrapper.style.fontSize = '12px';
+    contentWrapper.style.lineHeight = '1.6';
+    contentWrapper.style.whiteSpace = 'pre-wrap'; // Respect line breaks and spacing
+    contentWrapper.style.wordBreak = 'break-word';
+    contentWrapper.style.textAlign = 'left'; // Default alignment for content
 
     elementToPrint.appendChild(titleElement);
-    elementToPrint.appendChild(contentWrapper);
+    elementToPrint.appendChild(contentWrapper); // Always append
 
-    // Ensure text is visible in PDF by setting explicit colors
-    titleElement.style.color = '#000000'; // Black for title
-    contentWrapper.style.color = '#333333'; // Dark gray for content
+    // For debugging: Temporarily append to body to see what's being rendered
+    // document.body.appendChild(elementToPrint); 
+    // setTimeout(() => { if (elementToPrint.parentElement === document.body) document.body.removeChild(elementToPrint); }, 5000);
 
-    // Optional: Add some basic styling for the PDF output
-    // titleElement.style.marginBottom = '20px';
-    // titleElement.style.fontSize = '24px'; // Example style
-    // contentWrapper.style.fontSize = '12px'; // Example style
 
     const filename = (noteTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase() || "note") + ".pdf";
     const opt = {
-        margin: 10, // mm
+        margin: 0, // Margins are now handled by elementToPrint's padding
         filename: filename,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
+        html2canvas: { 
+            scale: 2, 
+            useCORS: true, 
+            logging: true, // Enable logging for debugging
+            backgroundColor: '#ffffff' // Ensure canvas background is white
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
