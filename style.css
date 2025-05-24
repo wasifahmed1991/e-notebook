@@ -258,6 +258,10 @@ header h1 {
     main {
         padding: 10px 0; /* Reduce padding for main on smaller screens */
     }
+
+    #export-actions-container {
+        justify-content: center; /* Center export buttons on tablets */
+    }
 }
 
 /* Responsive adjustments for smaller mobile screens */
@@ -315,6 +319,11 @@ header h1 {
     body {
         /* Ensure content starts from the top, especially when container is full height */
         justify-content: flex-start; 
+    }
+
+    #export-actions-container {
+        flex-wrap: wrap;         /* Allow export buttons to wrap */
+        justify-content: center; /* Center wrapped buttons */
     }
 }
 
@@ -600,6 +609,35 @@ body.dark-theme #note-content-editor blockquote {
     border-left-color: #888888; /* Darker border for blockquote */
     color: #bbbbbb; /* Lighter text for blockquote content */
     background-color: rgba(50, 50, 50, 0.3); /* Subtle background for quote */
+}
+
+/* Export Actions Container Styling */
+#export-actions-container {
+    margin-top: 20px; /* Space below the note content editor */
+    display: flex;
+    justify-content: flex-end; /* Align buttons to the right */
+    gap: 10px; /* Space between export buttons */
+    padding-bottom: 5px; /* Space above the autosave indicator */
+}
+
+/* Base styling for buttons within the export-actions-container */
+/* These buttons will inherit specific background colors from their ID-based styles */
+#export-actions-container button {
+    padding: 8px 12px;
+    color: #333333; 
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    /* background-color is specifically set by #export-csv-btn etc. */
+}
+
+/* Dark theme adjustments for general buttons in export-actions-container */
+body.dark-theme #export-actions-container button {
+    color: #e0e0e0; 
+    border-color: rgba(120, 120, 120, 0.6);
+    /* Specific dark theme background-colors are handled by ID selectors like body.dark-theme #export-csv-btn */
 }
 
 /* Autosave Indicator Styling */
