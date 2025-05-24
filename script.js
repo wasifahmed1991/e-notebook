@@ -284,24 +284,45 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Ripple click animation on background
     document.body.addEventListener('click', function(event) {
-        // Target check: only proceed if the click is on designated background areas
         const target = event.target;
-        if (target.id === 'particles-bg' || 
-            target.tagName === 'BODY' || 
-            target.tagName === 'MAIN' || 
-            target.classList.contains('container') ||
-            target === document.documentElement // Also consider clicks on html element (if body doesn't fill viewport)
+
+        // 1. Define selectors for specific interactive elements or content blocks 
+        //    where clicks should absolutely NOT trigger the background animation.
+        const nonAnimatingContentSelectors = [
+            'button',
+            'a',
+            'input',
+            '[contenteditable]',      // The main note content editor div
+            '.note-item',           // Individual note items in the sidebar
+            '.note-item *',         // Children of note items
+            '#editor-toolbar',      // The toolbar itself
+            '#editor-toolbar *',    // Children of the toolbar (buttons are already covered, but good for completeness)
+            '#datetime-container',
+            '#datetime-container *',// Children of datetime (if any)
+            'header h1',              // The main title
+            'footer p',             // Text within the footer
+            'footer a'              // Links within the footer
+        ].join(',');
+
+        if (target.closest(nonAnimatingContentSelectors)) {
+            return; // Clicked on or inside a specific non-animating content element.
+        }
+
+        // 2. Now, check if the click was on a designated "background" area.
+        //    These are broader areas where, if not caught by the above, a click implies a background interaction.
+        //    This allows clicks on empty spaces within header, footer, sidebar, editor container, etc.
+        if (target.id === 'particles-bg' ||
+            target.tagName === 'BODY' ||
+            target.tagName === 'MAIN' ||
+            target.classList.contains('container') || 
+            target.closest('header') || // Includes empty space in header
+            target.closest('footer') || // Includes empty space in footer
+            target.closest('#notes-sidebar') || // Includes empty space in sidebar
+            target.closest('#note-editor-container') || // Includes empty space in editor area
+            target === document.documentElement // Click on root html element
            ) {
-            // Further check to avoid triggering on scrollbars if possible (though this is hard to do reliably)
-            // and to avoid if an interactive element within these areas was somehow missed by the above.
-            if (target.closest('button, a, input, [contenteditable], #notes-sidebar, #note-editor-container, header, footer')) {
-                 // If the click was on or inside an interactive element that's a child of a valid background target, ignore.
-                if (target.tagName !== 'MAIN' && !target.classList.contains('container') && target.id !== 'particles-bg' && target.tagName !== 'BODY' && target.tagName !== 'HTML') {
-                    return;
-                }
-            }
-
-
+            
+            // Proceed to create ripple and particles
             const ripple = document.createElement('span');
             ripple.classList.add('ripple-click-effect');
             document.body.appendChild(ripple);
