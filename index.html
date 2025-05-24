@@ -7,11 +7,14 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tsparticles/2.10.1/tsparticles.bundle.min.js"></script>
     <script src="script.js" defer></script>
 </head>
 <body>
+    <div id="particles-js"></div> <!-- Particle container -->
     <header>
         <h1>GlassNotes</h1>
+        <div id="date-time-display"></div> <!-- New element -->
     </header>
     <main>
         <div class="container">
@@ -25,12 +28,12 @@
                     <button id="bold-btn">Bold</button>
                     <button id="italic-btn">Italic</button>
                     <button id="underline-btn">Underline</button>
-                    <button id="export-csv-btn">Export CSV</button>
-                    <button id="export-xlsx-btn">Export XLSX</button>
-                    <button id="export-pdf-btn">Export PDF</button>
                     <button id="link-btn">Link</button>
                     <button id="bullet-list-btn">Bullets</button>
                     <button id="number-list-btn">Numbers</button>
+                    <button id="export-csv-btn">Export CSV</button>
+                    <button id="export-xlsx-btn">Export XLSX</button>
+                    <button id="export-pdf-btn">Export PDF</button>
                 </div>
                 <div id="note-content-editor" contenteditable="true"></div>
             </div>

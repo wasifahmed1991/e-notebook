@@ -12,6 +12,7 @@ const exportPdfBtn = document.getElementById('export-pdf-btn');
 const linkBtn = document.getElementById('link-btn');
 const bulletListBtn = document.getElementById('bullet-list-btn');
 const numberListBtn = document.getElementById('number-list-btn');
+const dateTimeDisplay = document.getElementById('date-time-display');
 
 // Notes Array
 let notes = [];
@@ -346,87 +347,96 @@ function exportNoteToPDF() {
         return;
     }
 
+    // 1. Function Structure & Element Preparation
     const noteTitle = noteTitleInput.value.trim();
-    const noteContentHTML = noteContentEditor.innerHTML.trim(); // Content from contenteditable
+    const noteContentHTML = noteContentEditor.innerHTML.trim();
 
-    // Log for debugging
-    console.log("Exporting to PDF...");
-    console.log("Note Title:", noteTitle);
-    console.log("Note Content HTML:", noteContentHTML);
-
-    if ((!currentNoteId && (!noteTitle && !noteContentHTML)) || (currentNoteId && !noteTitle && !noteContentHTML && noteContentEditor.innerText.trim() === '')) {
-        alert("No note selected or the current note is empty.");
-        console.log("PDF export aborted: Note is empty or not selected.");
+    if (!noteTitle && (!noteContentHTML || noteContentEditor.innerText.trim() === '')) {
+        alert("The current note is empty. Nothing to export.");
         return;
     }
 
-    const elementToPrint = document.createElement('div');
-    // Apply styles to elementToPrint
-    elementToPrint.style.width = '210mm'; // A4 width approx, less margins
-    elementToPrint.style.padding = '20px';
-    elementToPrint.style.fontFamily = 'Arial, sans-serif';
-    elementToPrint.style.color = '#000000'; // Explicitly black text
-    elementToPrint.style.boxSizing = 'border-box';
+    const printContainer = document.createElement('div');
+    printContainer.id = 'pdf-print-container';
+    printContainer.style.position = 'absolute';
+    printContainer.style.left = '-9999px';
+    printContainer.style.top = '0';
+    printContainer.style.width = '200mm'; // Approximate A4 width (210mm - 10mm margins)
+    printContainer.style.padding = '10mm'; // This will be the margin in the PDF
+    printContainer.style.fontFamily = 'Arial, sans-serif';
+    printContainer.style.fontSize = '12pt';
+    printContainer.style.lineHeight = '1.5';
+    printContainer.style.color = '#000';
+    printContainer.style.backgroundColor = '#fff'; // Solid background
+    printContainer.style.border = 'none';
+    printContainer.style.boxSizing = 'border-box'; // Important for width calculation
 
-    const titleElement = document.createElement('h1');
-    titleElement.textContent = noteTitle || "Untitled Note";
-    // Apply styles to titleElement
-    titleElement.style.fontSize = '24px';
-    titleElement.style.marginBottom = '15px';
-    titleElement.style.color = '#000000'; // Explicitly black text
-    titleElement.style.textAlign = 'center'; // Center title
+    const titleEl = document.createElement('h1');
+    titleEl.textContent = noteTitle || 'Untitled Note';
+    titleEl.style.fontSize = '18pt';
+    titleEl.style.marginBottom = '10mm';
+    titleEl.style.textAlign = 'center';
+    titleEl.style.color = '#000';
+    printContainer.appendChild(titleEl);
 
-    const contentWrapper = document.createElement('div');
-    contentWrapper.innerHTML = noteContentHTML; // Content from contenteditable
-    // Apply styles to contentWrapper
-    contentWrapper.style.fontSize = '12px';
-    contentWrapper.style.lineHeight = '1.5';
-    contentWrapper.style.color = '#000000'; // Explicitly black text
-    contentWrapper.style.wordWrap = 'break-word'; // Ensure long words break
-
-    // Ensure block-level elements within contentWrapper are styled correctly
-    // This is a general approach; specific tags might need more rules.
-    // html2pdf.js might not perfectly replicate all browser styles for dynamically created elements.
-    const blockElements = contentWrapper.querySelectorAll('p, div, ul, ol, li, h1, h2, h3, h4, h5, h6');
-    blockElements.forEach(el => {
-        el.style.display = 'block'; // Ensure block display
-        el.style.color = '#000000'; // Ensure text color is inherited or set
-        el.style.marginBottom = '10px'; // Add some spacing
+    const contentEl = document.createElement('div');
+    contentEl.innerHTML = noteContentHTML;
+    // Ensure visibility of content's children
+    Array.from(contentEl.children).forEach(child => {
+        if (child instanceof HTMLElement) {
+            child.style.color = '#000'; // Ensure black text
+            // Potentially add more styles here if elements are not rendering correctly
+            // e.g., child.style.display = 'block'; if that's an issue for some tags
+        }
     });
-    const inlineElements = contentWrapper.querySelectorAll('span, b, strong, i, em, u, a');
-    inlineElements.forEach(el => {
-        el.style.color = '#000000'; // Ensure text color is inherited or set
-    });
+    // For text nodes directly inside contentEl that are not wrapped in an element
+    // (less common with contenteditable but possible)
+    // This part is tricky as direct text nodes can't be styled via JS directly
+    // html2pdf should pick them up if parent `contentEl` has color.
+    printContainer.appendChild(contentEl);
 
+    document.body.appendChild(printContainer);
 
-    elementToPrint.appendChild(titleElement);
-    elementToPrint.appendChild(contentWrapper);
-
-    // Log the structure to be printed
-    console.log("Element to Print (outerHTML):", elementToPrint.outerHTML);
-
-
+    // 2. html2pdf.js Options
     const filename = (noteTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase() || "note") + ".pdf";
     const opt = {
-        margin: 10, // mm
-        filename: filename,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: true }, // Enabled logging for debugging
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // Added pagebreak options
+        margin:       0, // Margin is now applied by printContainer's padding
+        filename:     filename,
+        image:        { type: 'jpeg', quality: 0.95 },
+        html2canvas:  {
+            scale: 2,
+            logging: true,
+            useCORS: true,
+            // Attempt to use the actual dimensions of the off-screen element
+            // These need to be calculated *after* the element is in the DOM and rendered
+            width: printContainer.offsetWidth,
+            height: printContainer.offsetHeight,
+            windowWidth: printContainer.scrollWidth,
+            windowHeight: printContainer.scrollHeight,
+            scrollX: 0,
+            scrollY: 0,
+            x: 0,
+            y: 0,
+        },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
+    // 3. Execution and Cleanup
     exportPdfBtn.disabled = true;
     exportPdfBtn.textContent = 'Generating...';
 
-    html2pdf().from(elementToPrint).set(opt).save().then(() => {
-        exportPdfBtn.disabled = false;
-        exportPdfBtn.textContent = 'Export PDF';
+    html2pdf().from(printContainer).set(opt).save().then(() => {
+        // Success
+        console.log("PDF generated successfully.");
     }).catch(err => {
         console.error("Error generating PDF:", err);
         alert("Error generating PDF. Check console for details.");
+    }).finally(() => {
+        document.body.removeChild(printContainer);
         exportPdfBtn.disabled = false;
         exportPdfBtn.textContent = 'Export PDF';
+        console.log("PDF generation process finished. Cleaned up print container.");
     });
 }
 
@@ -464,12 +474,143 @@ bulletListBtn.addEventListener('click', (e) => {
     noteContentEditor.focus();
 });
 
-numberListBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    try {
-        document.execCommand('insertOrderedList', false, null);
-    } catch (err) {
-        console.error("Error inserting ordered list:", err);
+// --- Date/Time Display ---
+function updateDateTime() {
+    if (!dateTimeDisplay) return; // Guard clause
+
+    const now = new Date();
+    const optionsDate = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+    const dateString = now.toLocaleDateString(undefined, optionsDate); // Uses browser's default locale
+
+    const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    const timeString = now.toLocaleTimeString(undefined, optionsTime); // Uses browser's default locale
+
+    dateTimeDisplay.textContent = `${dateString}, ${timeString}`;
+}
+
+// Initial Call and Interval for Date/Time
+// This should be placed so it runs after the DOM is loaded,
+// ideally within or after the main DOMContentLoaded listener.
+// For now, ensuring it's at the end of script.js might work if script is deferred.
+// MOVED `if (dateTimeDisplay)` block into DOMContentLoaded for proper sequencing
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Existing loadNotes call
+    loadNotes();
+
+    // Date/Time Display Initialization (moved here)
+    if (dateTimeDisplay) {
+        updateDateTime(); // Initial call
+        setInterval(updateDateTime, 1000); // Update every second
     }
-    noteContentEditor.focus();
+
+    // tsParticles Initialization
+    if (typeof tsParticles !== 'undefined') {
+        tsParticles.load("particles-js", {
+            fpsLimit: 60,
+            particles: {
+                number: {
+                    value: 30,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: ["#ffffff", "#72d5f8", "#a484e9"]
+                },
+                shape: {
+                    type: "circle",
+                },
+                opacity: {
+                    value: 0.2,
+                    random: true,
+                    anim: {
+                        enable: true,
+                        speed: 0.5,
+                        opacity_min: 0.1,
+                        sync: false
+                    }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    anim: {
+                        enable: false,
+                    }
+                },
+                line_linked: {
+                    enable: false,
+                },
+                move: {
+                    enable: true,
+                    speed: 0.5,
+                    direction: "none",
+                    random: true,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false,
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: {
+                        enable: false,
+                    },
+                    onclick: {
+                        enable: false,
+                    },
+                    resize: true
+                }
+            },
+            detectRetina: true
+        });
+    } else {
+        console.warn("tsParticles library not loaded. Background particles will not be displayed.");
+    }
+
+    // Ripple Effect Initialization
+    document.body.addEventListener('click', createRipple);
 });
+
+function createRipple(event) {
+    // Check if the clicked element or its parents are interactive
+    const clickedEl = event.target;
+    // Define interactive selectors: buttons, links, inputs, contenteditable, note items, and the sidebar/editor containers.
+    // Added .delete-note-btn as it's a button within .note-item but needs explicit exclusion if .note-item itself allows ripples.
+    const interactiveSelectors = 'button, a, input, [contenteditable="true"], .note-item, .delete-note-btn, #notes-sidebar, #note-editor-container';
+
+    if (clickedEl.closest(interactiveSelectors)) {
+        // If the click is on or within an interactive element, do not create a ripple.
+        return;
+    }
+
+    // Further check: if the click is on something inside the 'header' (like date-time or title)
+    // but not directly the header itself, and it's not caught by above, we might want to avoid it.
+    // However, the current interactiveSelectors should cover buttons/links.
+    // Let's assume for now that if it's not in interactiveSelectors, it's a valid background for a ripple.
+
+    const ripple = document.createElement('div');
+    ripple.className = 'click-ripple';
+    // Append to body so ripple is positioned relative to the viewport,
+    // allowing it to appear correctly regardless of where the body is scrolled.
+    document.body.appendChild(ripple);
+
+    // Size and position the ripple
+    // Make ripple diameter based on a fixed size or a small percentage of viewport larger dimension
+    const rippleSize = Math.max(window.innerWidth, window.innerHeight) * 0.05; // e.g., 5% of larger dimension
+    ripple.style.width = ripple.style.height = `${rippleSize}px`;
+
+    // Position at click coordinates relative to the viewport
+    // Adjust so ripple originates from its center
+    ripple.style.left = `${event.clientX - (rippleSize / 2)}px`;
+    ripple.style.top = `${event.clientY - (rippleSize / 2)}px`;
+
+    // Remove ripple after animation
+    ripple.addEventListener('animationend', () => {
+        if (ripple.parentElement) { // Check if it's still in the DOM
+            ripple.remove();
+        }
+    });
+}

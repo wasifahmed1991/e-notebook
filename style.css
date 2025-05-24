@@ -1,5 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
 
+html {
+    height: 100%; /* Can help with min-height on body */
+    box-sizing: border-box; /* Apply to all elements for easier box model math */
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+#particles-js {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1; /* Crucial: send it to the very back */
+}
+
 /* Body Styling */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -7,13 +24,15 @@ body {
     background: linear-gradient(120deg, #72d5f8, #a484e9, #7fffd4, #a484e9, #72d5f8); /* New gradient */
     background-size: 300% 300%; /* Make background larger to allow smooth position animation */
     animation: animateBackgroundGradient 20s linear infinite; /* Adjusted duration and timing function */
-    margin: 0;
-    padding: 0;
+    margin: 0; /* Remove any default body margin */
+    padding: 0; /* Ensure no body padding */
     min-height: 100vh;
+    width: 100%; /* Explicitly set width */
     display: flex;
     flex-direction: column; /* Align header and container vertically */
-    justify-content: center;
-    align-items: center;
+    /* justify-content: center; /* Changed from center to flex-start for more typical top-alignment */
+    justify-content: flex-start; 
+    align-items: center; /* This should center .container */
     color: #333; /* Default dark text color */
 }
 
@@ -39,13 +58,24 @@ header {
 
 header h1 {
     font-family: 'Righteous', cursive;
-    background: -webkit-linear-gradient(45deg, #f0c6f9, #87CEFA, #f0c6f9); /* Light purple to light blue gradient */
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-size: 3em; /* Adjusted size for new font */
+    /* background: -webkit-linear-gradient(45deg, #f0c6f9, #87CEFA, #f0c6f9); */ /* Removed gradient */
+    /* -webkit-background-clip: text; */ /* Removed for solid color */
+    /* -webkit-text-fill-color: transparent; */ /* Removed for solid color */
+    color: #4A4A4A; /* Solid dark gray color */
+    font-size: 3em; /* Adjusted size for new font - kept from previous step */
     text-align: center;
     padding: 20px 0;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.1); /* Softer shadow with gradient text */
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.1); /* Adjusted shadow for dark text */
+}
+
+#date-time-display {
+    text-align: center;
+    color: #4A4A4A; /* Match the new heading color, or a slightly lighter shade */
+    font-size: 0.9em; /* Adjust as needed */
+    margin-top: -10px; /* Adjust to position nicely below the h1 */
+    margin-bottom: 10px; /* Add some space before the main container */
+    /* Consider a less prominent text shadow than the main heading, or none */
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.1); /* Very subtle shadow if background is darkish */
 }
 
 /* Background Animation Keyframes */
@@ -176,13 +206,13 @@ footer p {
 }
 
 footer a {
-    color: #a484e9; /* Theme purple for links */
+    color: #5a4e8c; /* Darker theme purple */
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 footer a:hover {
-    color: #72d5f8; /* Theme blue for hover */
+    color: #3e3567; /* Even darker theme purple */
     text-decoration: underline;
 }
 
@@ -278,6 +308,10 @@ footer .heart {
         font-size: 0.9em; /* Slightly smaller button text */
         padding: 8px 12px;
     }
+    #date-time-display { /* Responsive adjustment */
+        font-size: 0.8em;
+        margin-top: -8px;
+    }
 }
 
 /* Very Small Mobile Screens */
@@ -341,4 +375,44 @@ footer .heart {
 
 #editor-toolbar button:hover {
     background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Ripple Effect Styling */
+.click-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.3); /* Ripple color - semi-transparent white */
+    transform: scale(0);
+    animation: ripple-effect 0.6s ease-out;
+    pointer-events: none; /* Ensure ripple doesn't interfere with other clicks */
+    z-index: 999; /* Ensure ripple is visible on top of background but below modals etc. */
+}
+
+@keyframes ripple-effect {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Specific styles for export buttons */
+#export-csv-btn {
+    background-color: rgba(100, 190, 120, 0.35); 
+}
+#export-xlsx-btn {
+    background-color: rgba(100, 160, 210, 0.35);
+}
+#export-pdf-btn {
+    background-color: rgba(210, 100, 100, 0.35);
+}
+
+/* Optional: Refined hover states for export buttons */
+#export-csv-btn:hover {
+    background-color: rgba(80, 170, 100, 0.45);
+}
+#export-xlsx-btn:hover {
+    background-color: rgba(80, 140, 190, 0.45);
+}
+#export-pdf-btn:hover {
+    background-color: rgba(190, 80, 80, 0.45);
 }
