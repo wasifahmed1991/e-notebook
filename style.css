@@ -444,3 +444,177 @@ footer a:hover {
 #export-pdf-btn:hover {
     background-color: rgba(240, 200, 200, 0.45); /* Darker red/pink tint on hover */
 }
+
+/* Blockquote Styling within Note Editor */
+#note-content-editor blockquote {
+    border-left: 3px solid #cccccc; /* Neutral grey border */
+    margin-left: 20px; /* Indentation from the left */
+    padding-left: 10px; /* Padding inside the quote */
+    font-style: italic; /* Italicize quote text */
+    color: #555555; /* Slightly lighter grey text for the quote */
+    margin-top: 10px; /* Space above the blockquote */
+    margin-bottom: 10px; /* Space below the blockquote */
+}
+
+/* Theme Toggle Button Styling */
+#theme-toggle-btn {
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #333333;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-top: 10px; /* Space below datetime container */
+}
+
+#theme-toggle-btn:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Dark Theme Styles */
+body.dark-theme {
+    background: linear-gradient(to right, #232526, #414345, #232526, #414345); /* Dark animated gradient example */
+    /* If using the same animation timing: */
+    /* background-size: 400% 100%; */ /* Already on body, ensure it's not overridden or re-set if needed */
+    /* animation: animatedGradient 20s ease infinite; */ /* Or a new animation-name for dark */
+    color: #e0e0e0; /* Light grey base text */
+}
+
+/* If a different animation is desired for dark theme, define @keyframes animatedDarkGradient and apply it: */
+/* @keyframes animatedDarkGradient { ... } */
+/* body.dark-theme { animation-name: animatedDarkGradient; } */
+
+
+body.dark-theme .container {
+    background: rgba(40, 40, 40, 0.45); /* Darker glass with more opacity */
+    border-color: rgba(100, 100, 100, 0.45);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5); /* Darker shadow */
+}
+
+body.dark-theme header h1 {
+    color: #f0f0f0; /* Brighter white for main title */
+    text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.5), /* Darker shadow for depth in dark mode */
+                 0px 0px 1px rgba(255, 255, 255, 0.1); /* Very subtle light highlight */
+}
+
+body.dark-theme #datetime-container {
+    color: #cccccc; /* Lighter grey for date/time */
+}
+
+/* General button and input styling for dark theme */
+body.dark-theme #new-note-btn,
+body.dark-theme #editor-toolbar button,
+body.dark-theme #theme-toggle-btn { /* Include theme toggle button */
+    background: rgba(80, 80, 80, 0.5); /* Darker button background */
+    border-color: rgba(120, 120, 120, 0.6);
+    color: #e0e0e0; /* Light text on buttons */
+}
+
+body.dark-theme #new-note-btn:hover,
+body.dark-theme #editor-toolbar button:hover,
+body.dark-theme #theme-toggle-btn:hover {
+    background: rgba(100, 100, 100, 0.65); /* Slightly lighter on hover */
+}
+
+/* Distinct Export Buttons - Dark Theme */
+body.dark-theme #export-csv-btn {
+    background-color: rgba(50, 100, 50, 0.6); /* Darker green tint */
+}
+body.dark-theme #export-csv-btn:hover {
+    background-color: rgba(70, 120, 70, 0.75);
+}
+
+body.dark-theme #export-xlsx-btn {
+    background-color: rgba(50, 50, 100, 0.6); /* Darker blue/purple tint */
+}
+body.dark-theme #export-xlsx-btn:hover {
+    background-color: rgba(70, 70, 120, 0.75);
+}
+
+body.dark-theme #export-pdf-btn {
+    background-color: rgba(100, 50, 50, 0.6); /* Darker red/pink tint */
+}
+body.dark-theme #export-pdf-btn:hover {
+    background-color: rgba(120, 70, 70, 0.75);
+}
+
+/* Inputs and Editor Area */
+body.dark-theme #note-title-input,
+body.dark-theme #note-content-editor {
+    background: rgba(30, 30, 30, 0.5); /* Very dark input background */
+    border-color: rgba(100, 100, 100, 0.5);
+    color: #e0e0e0; /* Light text for input */
+}
+
+body.dark-theme #note-title-input::placeholder {
+    color: #888888; /* Mid-grey placeholder */
+}
+
+/* Sidebar Note Items */
+body.dark-theme .note-item {
+    background: rgba(60, 60, 60, 0.4); /* Darker item background */
+    border: 1px solid rgba(100,100,100,0.3); /* Subtle border */
+}
+body.dark-theme .note-item:hover {
+    background: rgba(80, 80, 80, 0.5);
+}
+body.dark-theme .note-item-title {
+    color: #e0e0e0; /* Light text for note titles */
+}
+body.dark-theme .delete-note-btn { /* Keep delete button contrast */
+    background: rgba(180, 80, 80, 0.7); 
+    color: #f0f0f0;
+}
+body.dark-theme .delete-note-btn:hover {
+    background: rgba(200, 100, 100, 0.8);
+}
+
+
+/* Scrollbar - Dark Theme */
+body.dark-theme #notes-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1); /* Lighter track for dark theme */
+}
+body.dark-theme #notes-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.25); /* Lighter thumb for dark theme */
+}
+body.dark-theme #notes-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.35);
+}
+body.dark-theme #notes-list {
+    scrollbar-color: rgba(255, 255, 255, 0.25) rgba(255, 255, 255, 0.1); /* thumb track for Firefox */
+}
+
+/* Footer - Dark Theme */
+body.dark-theme footer,
+body.dark-theme footer a {
+    color: #cccccc; /* Lighter grey for footer text */
+}
+body.dark-theme footer a:hover {
+    color: #ffffff; /* White on hover for footer links */
+}
+
+/* Blockquotes - Dark Theme */
+body.dark-theme #note-content-editor blockquote {
+    border-left-color: #888888; /* Darker border for blockquote */
+    color: #bbbbbb; /* Lighter text for blockquote content */
+    background-color: rgba(50, 50, 50, 0.3); /* Subtle background for quote */
+}
+
+/* Autosave Indicator Styling */
+#autosave-indicator {
+    font-size: 0.8em;
+    color: #777777; /* Subtle grey color for light theme */
+    padding: 2px 5px;
+    height: 1.5em; /* Prevent layout shift */
+    line-height: 1.5em; /* Vertically center text within the allocated height */
+    opacity: 0; /* Initially hidden */
+    transition: opacity 0.5s ease-in-out; /* Smooth fade in/out */
+    text-align: right; /* As per HTML placement */
+    margin-top: 5px;
+}
+
+body.dark-theme #autosave-indicator {
+    color: #aaaaaa; /* Lighter grey for dark theme */
+}

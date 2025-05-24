@@ -6,16 +6,21 @@ const notesListDiv = document.getElementById('notes-list'); // Corrected: notes-
 const boldBtn = document.getElementById('bold-btn');
 const italicBtn = document.getElementById('italic-btn');
 const underlineBtn = document.getElementById('underline-btn');
+const strikethroughBtn = document.getElementById('strikethrough-btn'); // Added strikethroughBtn
+const blockquoteBtn = document.getElementById('blockquote-btn'); // Added blockquoteBtn
 const linkBtn = document.getElementById('link-btn'); // Added linkBtn
 const bulletListBtn = document.getElementById('bullet-list-btn'); // Added bulletListBtn
 const numberListBtn = document.getElementById('number-list-btn'); // Added numberListBtn
 const exportCsvBtn = document.getElementById('export-csv-btn');
 const exportXlsxBtn = document.getElementById('export-xlsx-btn');
 const exportPdfBtn = document.getElementById('export-pdf-btn');
+const themeToggleBtn = document.getElementById('theme-toggle-btn'); // Added themeToggleBtn
+const autosaveIndicator = document.getElementById('autosave-indicator'); // Added autosaveIndicator
 
 // Notes Array
 let notes = [];
 let currentNoteId = null;
+let autosaveTimeout = null; // For managing autosave indicator display
 
 // --- Core Functions ---
 
@@ -96,6 +101,11 @@ function displayNotes() {
  * @param {string} noteId - The ID of the note to delete.
  */
 function deleteNote(noteId) {
+    // Add confirmation step
+    if (!confirm("Are you sure you want to permanently delete this note?")) {
+        return; // User clicked 'Cancel', so exit the function without deleting
+    }
+
     notes = notes.filter(note => note.id !== noteId);
     saveNotes();
     displayNotes();
@@ -154,6 +164,26 @@ function handleEditorInput() {
 
     saveNotes();
     displayNotes(); // Refresh list, especially for title changes or new notes
+
+    // Autosave indicator logic
+    if (autosaveIndicator) {
+        clearTimeout(autosaveTimeout); // Clear any existing timeout
+
+        autosaveIndicator.textContent = "Saving...";
+        autosaveIndicator.style.opacity = '1';
+
+        autosaveTimeout = setTimeout(() => {
+            autosaveIndicator.textContent = "Saved!";
+            // Keep "Saved!" message for a bit longer, then fade out
+            autosaveTimeout = setTimeout(() => {
+                autosaveIndicator.style.opacity = '0';
+                // Optional: clear text after fade out, after transition ends
+                // setTimeout(() => { 
+                //     if (autosaveIndicator.style.opacity === '0') autosaveIndicator.textContent = ""; 
+                // }, 500); // Match CSS transition duration
+            }, 1500); // Duration "Saved!" is shown (1.5 seconds)
+        }, 750); // Delay before showing "Saved!" (0.75 seconds)
+    }
 }
 
 /**
@@ -362,6 +392,37 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     });
+
+    // Theme Toggle Functionality
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            document.body.classList.add('dark-theme');
+            themeToggleBtn.textContent = 'Toggle Light Mode';
+        } else {
+            document.body.classList.remove('dark-theme');
+            themeToggleBtn.textContent = 'Toggle Dark Mode';
+        }
+    }
+
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme) {
+        applyTheme(currentTheme);
+    } else { // Default to light theme if no preference saved
+        applyTheme('light');
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+        let theme = 'light';
+        if (document.body.classList.contains('dark-theme')) {
+            // It's currently dark, so toggle to light
+            theme = 'light';
+        } else {
+            // It's currently light, so toggle to dark
+            theme = 'dark';
+        }
+        applyTheme(theme);
+        localStorage.setItem('theme', theme);
+    });
 });
 
 // --- Rich Text Editing ---
@@ -399,6 +460,18 @@ italicBtn.addEventListener('click', (e) => {
 underlineBtn.addEventListener('click', (e) => {
     e.preventDefault();
     formatDoc('underline');
+});
+
+// Event Listener for Strikethrough Button
+strikethroughBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    formatDoc('strikeThrough');
+});
+
+// Event Listener for Blockquote Button
+blockquoteBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    formatDoc('formatBlock', '<blockquote>');
 });
 
 // Function to add a link
