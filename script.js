@@ -636,27 +636,30 @@ function exportNoteToPDF() {
     }
 
     const elementToPrint = document.createElement('div');
-    // --- Styling for elementToPrint (the "page") ---
-    elementToPrint.style.width = '210mm'; // A4 width
-    elementToPrint.style.padding = '15mm'; // Page margins inside the white "page"
-    elementToPrint.style.backgroundColor = '#ffffff';
-    elementToPrint.style.boxSizing = 'border-box';
+    // --- Styling for elementToPrint (for html2pdf.js processing) ---
+    elementToPrint.style.display = 'block';
+    elementToPrint.style.position = 'relative'; // Default or 'static' is also fine
+    elementToPrint.style.textAlign = 'left';   // Base alignment for the whole printable area
+    elementToPrint.style.width = '100%';       // Let html2pdf.js determine width based on format & margin
+    elementToPrint.style.height = 'auto';
+    elementToPrint.style.overflow = 'visible'; // Crucial for multi-page content
+    elementToPrint.style.padding = '0';        // Margins will be handled by opt.margin
+    elementToPrint.style.margin = '0';
+    elementToPrint.style.backgroundColor = '#ffffff'; // Ensure a white background for content area
     elementToPrint.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
-    elementToPrint.style.height = 'auto'; // Let content define height
-    elementToPrint.style.overflow = 'visible'; // Let html2pdf handle page breaks
 
     const titleElement = document.createElement('h1');
     titleElement.textContent = noteTitle || "Untitled Note";
     // --- Styling for titleElement ---
     titleElement.style.color = '#000000';
-    titleElement.style.fontSize = '22px'; // Slightly larger
-    titleElement.style.fontWeight = 'bold'; // Ensure boldness
+    titleElement.style.fontSize = '22px';
+    titleElement.style.fontWeight = 'bold';
     titleElement.style.lineHeight = '1.4';
-    titleElement.style.marginBottom = '10mm';
-    titleElement.style.padding = '0'; // Reset padding for h1
+    titleElement.style.marginBottom = '10mm'; // Space after the title
+    titleElement.style.marginTop = '0';       // Ensure title starts at the top of the content area
+    titleElement.style.padding = '0';
     titleElement.style.wordBreak = 'break-word';
-    titleElement.style.textAlign = 'center';
-    // No height or max-height on titleElement
+    titleElement.style.textAlign = 'center';  // Center the title text
 
     const contentWrapper = document.createElement('div');
     contentWrapper.innerHTML = noteContentHTML;
@@ -664,36 +667,38 @@ function exportNoteToPDF() {
     contentWrapper.style.color = '#333333';
     contentWrapper.style.fontSize = '12px';
     contentWrapper.style.lineHeight = '1.6';
-    contentWrapper.style.whiteSpace = 'pre-wrap'; // Crucial for preserving formatting
+    contentWrapper.style.whiteSpace = 'pre-wrap'; // Preserve formatting
     contentWrapper.style.wordBreak = 'break-word';
-    contentWrapper.style.textAlign = 'left';
-    contentWrapper.style.display = 'block'; // Ensure it takes up space
-    contentWrapper.style.minHeight = '10mm'; // Give it some minimum height if content is very short or empty
+    contentWrapper.style.textAlign = 'left';    // Content alignment
+    contentWrapper.style.overflow = 'visible';  // Ensure all content flows
+    contentWrapper.style.height = 'auto';       // Let content define its height
 
     elementToPrint.appendChild(titleElement);
     elementToPrint.appendChild(contentWrapper);
 
-    // Visual debugging (conceptual - this code would be temporary during actual debugging)
+    // Conceptual visual debugging (code would be commented out or removed in production)
     /*
-    elementToPrint.style.position = 'fixed';
-    elementToPrint.style.top = '10px'; elementToPrint.style.left = '10px';
-    elementToPrint.style.border = '3px solid red'; elementToPrint.style.zIndex = '10000';
-    elementToPrint.style.maxHeight = '90vh'; // For viewport scrolling
-    elementToPrint.style.overflow = 'auto'; // For viewport scrolling
-    document.body.appendChild(elementToPrint);
-    // setTimeout(() => { if (elementToPrint.parentElement) elementToPrint.remove(); }, 8000);
+    const tempView = elementToPrint.cloneNode(true); // Clone to avoid issues with html2pdf processing
+    tempView.style.position = 'fixed'; tempView.style.left = '10px'; tempView.style.top = '10px';
+    tempView.style.zIndex = '20000'; tempView.style.border = '2px solid red';
+    tempView.style.width = '210mm'; // A4 width for viewing
+    tempView.style.padding = '15mm'; // Apply similar margins as PDF for viewing
+    tempView.style.boxSizing = 'border-box';
+    tempView.style.maxHeight = '90vh'; tempView.style.overflowY = 'scroll';
+    document.body.appendChild(tempView);
+    setTimeout(() => { if (tempView.parentElement) tempView.remove(); }, 10000); // Remove after 10s
     */
 
     const filename = (noteTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase() || "note") + ".pdf";
     const opt = {
-        margin: 0, // Margins are handled by elementToPrint's padding
+        margin: 15, // Apply 15mm margins to the PDF page (can be array [top, left, bottom, right])
         filename: filename,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
             scale: 2, 
             useCORS: true, 
-            logging: false, // Set to false for final version
-            backgroundColor: '#ffffff'
+            logging: false, 
+            backgroundColor: '#ffffff' // Should be redundant if elementToPrint has it, but good for safety
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
