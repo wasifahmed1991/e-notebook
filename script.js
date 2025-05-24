@@ -9,6 +9,9 @@ const underlineBtn = document.getElementById('underline-btn');
 const exportCsvBtn = document.getElementById('export-csv-btn');
 const exportXlsxBtn = document.getElementById('export-xlsx-btn');
 const exportPdfBtn = document.getElementById('export-pdf-btn');
+const linkBtn = document.getElementById('link-btn');
+const bulletListBtn = document.getElementById('bullet-list-btn');
+const numberListBtn = document.getElementById('number-list-btn');
 
 // Notes Array
 let notes = [];
@@ -344,34 +347,73 @@ function exportNoteToPDF() {
     }
 
     const noteTitle = noteTitleInput.value.trim();
-    const noteContentHTML = noteContentEditor.innerHTML.trim();
+    const noteContentHTML = noteContentEditor.innerHTML.trim(); // Content from contenteditable
 
-    if ((!currentNoteId && (!noteTitle && !noteContentHTML)) || (currentNoteId && !noteTitle && !noteContentHTML)) {
+    // Log for debugging
+    console.log("Exporting to PDF...");
+    console.log("Note Title:", noteTitle);
+    console.log("Note Content HTML:", noteContentHTML);
+
+    if ((!currentNoteId && (!noteTitle && !noteContentHTML)) || (currentNoteId && !noteTitle && !noteContentHTML && noteContentEditor.innerText.trim() === '')) {
         alert("No note selected or the current note is empty.");
+        console.log("PDF export aborted: Note is empty or not selected.");
         return;
     }
 
     const elementToPrint = document.createElement('div');
+    // Apply styles to elementToPrint
+    elementToPrint.style.width = '210mm'; // A4 width approx, less margins
+    elementToPrint.style.padding = '20px';
+    elementToPrint.style.fontFamily = 'Arial, sans-serif';
+    elementToPrint.style.color = '#000000'; // Explicitly black text
+    elementToPrint.style.boxSizing = 'border-box';
+
     const titleElement = document.createElement('h1');
-    titleElement.textContent = noteTitle || "Untitled Note"; // Provide a default if title is empty
+    titleElement.textContent = noteTitle || "Untitled Note";
+    // Apply styles to titleElement
+    titleElement.style.fontSize = '24px';
+    titleElement.style.marginBottom = '15px';
+    titleElement.style.color = '#000000'; // Explicitly black text
+    titleElement.style.textAlign = 'center'; // Center title
+
     const contentWrapper = document.createElement('div');
-    contentWrapper.innerHTML = noteContentHTML;
+    contentWrapper.innerHTML = noteContentHTML; // Content from contenteditable
+    // Apply styles to contentWrapper
+    contentWrapper.style.fontSize = '12px';
+    contentWrapper.style.lineHeight = '1.5';
+    contentWrapper.style.color = '#000000'; // Explicitly black text
+    contentWrapper.style.wordWrap = 'break-word'; // Ensure long words break
+
+    // Ensure block-level elements within contentWrapper are styled correctly
+    // This is a general approach; specific tags might need more rules.
+    // html2pdf.js might not perfectly replicate all browser styles for dynamically created elements.
+    const blockElements = contentWrapper.querySelectorAll('p, div, ul, ol, li, h1, h2, h3, h4, h5, h6');
+    blockElements.forEach(el => {
+        el.style.display = 'block'; // Ensure block display
+        el.style.color = '#000000'; // Ensure text color is inherited or set
+        el.style.marginBottom = '10px'; // Add some spacing
+    });
+    const inlineElements = contentWrapper.querySelectorAll('span, b, strong, i, em, u, a');
+    inlineElements.forEach(el => {
+        el.style.color = '#000000'; // Ensure text color is inherited or set
+    });
+
 
     elementToPrint.appendChild(titleElement);
     elementToPrint.appendChild(contentWrapper);
 
-    // Optional: Add some basic styling for the PDF output
-    // titleElement.style.marginBottom = '20px';
-    // titleElement.style.fontSize = '24px'; // Example style
-    // contentWrapper.style.fontSize = '12px'; // Example style
+    // Log the structure to be printed
+    console.log("Element to Print (outerHTML):", elementToPrint.outerHTML);
+
 
     const filename = (noteTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase() || "note") + ".pdf";
     const opt = {
         margin: 10, // mm
         filename: filename,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        html2canvas: { scale: 2, useCORS: true, logging: true }, // Enabled logging for debugging
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // Added pagebreak options
     };
 
     exportPdfBtn.disabled = true;
@@ -390,3 +432,44 @@ function exportNoteToPDF() {
 
 // Event Listener for Export PDF Button
 exportPdfBtn.addEventListener('click', exportNoteToPDF);
+
+// --- Add Link ---
+linkBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const url = window.prompt("Enter the URL:");
+    if (url) {
+        // Ensure the editor has focus, then execute command
+        // This helps ensure the command is applied to the correct context
+        noteContentEditor.focus(); 
+        try {
+            document.execCommand('createLink', false, url);
+        } catch (err) {
+            console.error("Error creating link:", err);
+            alert("Could not create link. Ensure you have selected text if you wish to hyperlink existing text.");
+        }
+        // It's good practice to re-focus the editor after a prompt,
+        // as the prompt can take focus away.
+        noteContentEditor.focus(); 
+    }
+});
+
+// --- List Formatting ---
+bulletListBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    try {
+        document.execCommand('insertUnorderedList', false, null);
+    } catch (err) {
+        console.error("Error inserting unordered list:", err);
+    }
+    noteContentEditor.focus();
+});
+
+numberListBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    try {
+        document.execCommand('insertOrderedList', false, null);
+    } catch (err) {
+        console.error("Error inserting ordered list:", err);
+    }
+    noteContentEditor.focus();
+});

@@ -1,7 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+
 /* Body Styling */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to right top, #65dfc9, #6cdbeb);
+    /* background: linear-gradient(to right top, #65dfc9, #6cdbeb); /* Old gradient */
+    background: linear-gradient(120deg, #72d5f8, #a484e9, #7fffd4, #a484e9, #72d5f8); /* New gradient */
+    background-size: 300% 300%; /* Make background larger to allow smooth position animation */
+    animation: animateBackgroundGradient 20s linear infinite; /* Adjusted duration and timing function */
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -9,6 +14,7 @@ body {
     flex-direction: column; /* Align header and container vertically */
     justify-content: center;
     align-items: center;
+    color: #333; /* Default dark text color */
 }
 
 /* Main Application Container */
@@ -27,12 +33,26 @@ body {
 }
 
 /* Header */
+header {
+    width: 100%; /* Ensure header spans full width */
+}
+
 header h1 {
+    font-family: 'Righteous', cursive;
+    background: -webkit-linear-gradient(45deg, #f0c6f9, #87CEFA, #f0c6f9); /* Light purple to light blue gradient */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 3em; /* Adjusted size for new font */
     text-align: center;
-    color: #fff;
     padding: 20px 0;
-    font-size: 2.5em;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1); /* Softer shadow with gradient text */
+}
+
+/* Background Animation Keyframes */
+@keyframes animateBackgroundGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 /* Notes Sidebar */
@@ -50,7 +70,7 @@ header h1 {
     padding: 10px 15px;
     margin-bottom: 20px;
     background: rgba(255, 255, 255, 0.2);
-    color: white;
+    color: #333; /* Dark text color */
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
     cursor: pointer;
@@ -79,12 +99,12 @@ header h1 {
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
     font-size: 1.2em;
-    color: #fff;
+    color: #333; /* Dark text color */
     outline: none;
 }
 
 #note-title-input::placeholder {
-    color: rgba(220, 220, 220, 0.8);
+    color: #7f8c8d; /* Lighter dark color for placeholder */
 }
 
 /* Note Content Editor */
@@ -94,7 +114,7 @@ header h1 {
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
-    color: #fff;
+    color: #333; /* Dark text color */
     outline: none;
     min-height: 300px;
     line-height: 1.6;
@@ -115,7 +135,7 @@ header h1 {
 }
 
 .note-item:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.05); /* Darker hover for better contrast with dark text */
 }
 
 .note-item-title { /* Create a span for the title if not already done, to help with flex layout */
@@ -123,7 +143,7 @@ header h1 {
     overflow: hidden; /* For long titles */
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: #fff; /* Ensure title text is visible */
+    color: #333; /* Dark text color */
 }
 
 .delete-note-btn {
@@ -141,6 +161,165 @@ header h1 {
     background: rgba(255, 50, 50, 0.7); /* Darker red on hover */
 }
 
+/* Footer Styling */
+footer {
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: auto; /* Pushes footer to bottom with flex column body */
+    color: #333;
+    font-size: 0.9em;
+}
+
+footer p {
+    margin: 0;
+}
+
+footer a {
+    color: #a484e9; /* Theme purple for links */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: #72d5f8; /* Theme blue for hover */
+    text-decoration: underline;
+}
+
+footer .heart {
+    color: #e74c3c; /* Red heart */
+    font-size: 1.2em;
+}
+
+
+/* Responsive Adjustments */
+
+/* Tablet-sized Screens */
+@media (max-width: 992px) {
+    .container {
+        width: 90%;
+        min-height: 85vh; /* Slightly increased height */
+    }
+
+    /* Optional: Adjust sidebar width or other elements if needed */
+    /* #notes-sidebar {
+        width: 35%;
+    } */
+}
+
+/* Styles for the notes list itself, for scrolling on desktop */
+#notes-list {
+    max-height: 60vh; /* Adjust as needed, can be tested with ~12 notes */
+    overflow-y: auto;
+    padding-right: 5px; /* Add a little padding so scrollbar doesn't overlay content too much */
+    
+    /* Firefox scrollbar styling */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(164, 132, 233, 0.7) rgba(255, 255, 255, 0.1); /* thumb track */
+}
+
+/* Scrollbar styling for WebKit browsers */
+#notes-list::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+#notes-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1); /* Transparent or very light track */
+    border-radius: 10px;
+}
+
+#notes-list::-webkit-scrollbar-thumb {
+    background-color: rgba(164, 132, 233, 0.7); /* Theme purple, semi-transparent */
+    border-radius: 10px;
+    border: 2px solid transparent; /* Creates padding around thumb */
+    background-clip: content-box; /* Important for the border to act as padding */
+}
+
+#notes-list::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(114, 213, 248, 0.8); /* Theme blue, semi-transparent on hover */
+}
+
+
+/* Mobile-sized Screens */
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+        min-height: 90vh;
+        flex-direction: column; /* Stack sidebar and editor */
+    }
+
+    #notes-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+        max-height: 35vh; /* Limit height for notes list */
+        overflow-y: auto; /* Add scroll for notes list */
+        margin-bottom: 10px; /* Space between sidebar and editor */
+    }
+
+    #note-editor-container {
+        width: 100%;
+    }
+
+    header h1 {
+        font-size: 2.5em; /* Adjusted from 3em base */
+    }
+
+    #note-content-editor {
+        min-height: 250px; /* Adjust from 300px */
+    }
+
+    #editor-toolbar {
+        flex-wrap: wrap; /* Allow toolbar buttons to wrap */
+        gap: 8px; /* Adjust gap for wrapped items */
+    }
+
+    #new-note-btn, #editor-toolbar button {
+        font-size: 0.9em; /* Slightly smaller button text */
+        padding: 8px 12px;
+    }
+}
+
+/* Very Small Mobile Screens */
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 2em; /* Adjusted from 3em base */
+    }
+
+    #notes-sidebar {
+        max-height: 30vh; /* Further reduce height for notes list */
+    }
+
+    #note-content-editor {
+        min-height: 200px; /* Adjust from 250px */
+    }
+
+    #note-title-input, #new-note-btn, #editor-toolbar button {
+        font-size: 0.85em; /* Further reduce font size */
+    }
+
+    #editor-toolbar {
+        gap: 5px; /* Further reduce gap */
+    }
+
+    #editor-toolbar button {
+        padding: 6px 10px; /* Smaller padding for toolbar buttons */
+    }
+
+    .container {
+        width: 100%;
+        border-radius: 0; /* Full width, no border radius */
+        min-height: 100vh; /* Full viewport height */
+        box-shadow: none; /* Remove shadow for full screen */
+        border: none; /* Remove border */
+    }
+
+    body {
+        padding: 0; /* Remove body padding if any was added for centering */
+    }
+
+}
+
 
 /* Editor Toolbar */
 #editor-toolbar {
@@ -152,7 +331,7 @@ header h1 {
 #editor-toolbar button {
     padding: 8px 12px; /* Slightly smaller than new-note-btn */
     background: rgba(255, 255, 255, 0.2);
-    color: white;
+    color: #333; /* Dark text color */
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 6px; /* Slightly smaller radius */
     cursor: pointer;
