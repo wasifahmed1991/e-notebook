@@ -1,0 +1,165 @@
+/* Body Styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right top, #65dfc9, #6cdbeb);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column; /* Align header and container vertically */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Main Application Container */
+.container {
+    width: 80%;
+    max-width: 1200px;
+    min-height: 80vh;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* Safari fallback */
+    border-radius: 15px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    display: flex;
+    overflow: hidden;
+}
+
+/* Header */
+header h1 {
+    text-align: center;
+    color: #fff;
+    padding: 20px 0;
+    font-size: 2.5em;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Notes Sidebar */
+#notes-sidebar {
+    width: 30%; /* flex: 0 0 250px; can also be used */
+    padding: 20px;
+    border-right: 1px solid rgba(255, 255, 255, 0.18);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+/* New Note Button */
+#new-note-btn {
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+#new-note-btn:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Note Editor Container */
+#note-editor-container {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+/* Note Title Input */
+#note-title-input {
+    padding: 10px;
+    margin-bottom: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    font-size: 1.2em;
+    color: #fff;
+    outline: none;
+}
+
+#note-title-input::placeholder {
+    color: rgba(220, 220, 220, 0.8);
+}
+
+/* Note Content Editor */
+#note-content-editor {
+    flex-grow: 1;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    color: #fff;
+    outline: none;
+    min-height: 300px;
+    line-height: 1.6;
+    overflow-y: auto; /* Add scroll for overflow content */
+}
+
+/* Note Item in Sidebar */
+.note-item {
+    display: flex; /* To align title and delete button */
+    justify-content: space-between; /* Pushes title and button apart */
+    align-items: center; /* Vertically aligns them */
+    padding: 8px;
+    margin-bottom: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.note-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.note-item-title { /* Create a span for the title if not already done, to help with flex layout */
+    flex-grow: 1; /* Allows title to take available space */
+    overflow: hidden; /* For long titles */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #fff; /* Ensure title text is visible */
+}
+
+.delete-note-btn {
+    background: rgba(255, 100, 100, 0.5); /* Reddish, semi-transparent */
+    color: white;
+    border: none;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px; /* Space between title and button */
+    font-size: 0.8em;
+}
+
+.delete-note-btn:hover {
+    background: rgba(255, 50, 50, 0.7); /* Darker red on hover */
+}
+
+
+/* Editor Toolbar */
+#editor-toolbar {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 5px;
+}
+
+#editor-toolbar button {
+    padding: 8px 12px; /* Slightly smaller than new-note-btn */
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px; /* Slightly smaller radius */
+    cursor: pointer;
+    font-size: 0.9em; /* Slightly smaller font */
+    transition: background-color 0.3s ease;
+}
+
+#editor-toolbar button:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
