@@ -7,6 +7,8 @@ const boldBtn = document.getElementById('bold-btn');
 const italicBtn = document.getElementById('italic-btn');
 const underlineBtn = document.getElementById('underline-btn');
 const linkBtn = document.getElementById('link-btn'); // Added linkBtn
+const bulletListBtn = document.getElementById('bullet-list-btn'); // Added bulletListBtn
+const numberListBtn = document.getElementById('number-list-btn'); // Added numberListBtn
 const exportCsvBtn = document.getElementById('export-csv-btn');
 const exportXlsxBtn = document.getElementById('export-xlsx-btn');
 const exportPdfBtn = document.getElementById('export-pdf-btn');
@@ -281,17 +283,39 @@ document.addEventListener('DOMContentLoaded', async () => {
             ripple.classList.add('ripple-click-effect');
             document.body.appendChild(ripple);
 
-            // Set position of the ripple
-            // clientX/clientY are viewport coordinates.
-            // pageX/pageY include scrolling, but for fixed ripple, clientX/Y is fine.
             ripple.style.left = event.clientX + 'px';
             ripple.style.top = event.clientY + 'px';
             
-            // Remove the ripple element after the animation completes
             ripple.addEventListener('animationend', () => {
                 ripple.remove();
             });
 
+            // Create firefly/star particles
+            const numParticles = Math.floor(Math.random() * 3) + 3; // Randomly 3 to 5 particles
+
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement('span');
+                particle.classList.add('click-particle');
+                
+                // Set initial position at the click
+                particle.style.left = event.clientX + 'px';
+                particle.style.top = event.clientY + 'px';
+
+                // Generate random values for CSS custom properties
+                // These control the direction and distance of the particle's movement
+                // Values between -1 and 1, then scaled by the CSS animation's multiplier
+                const randomX = (Math.random() - 0.5) * 2; 
+                const randomY = (Math.random() - 0.5) * 2;
+                
+                particle.style.setProperty('--random-x', randomX.toFixed(2));
+                particle.style.setProperty('--random-y', randomY.toFixed(2));
+                
+                document.body.appendChild(particle);
+
+                particle.addEventListener('animationend', () => {
+                    particle.remove();
+                });
+            }
         }
     });
 });
@@ -361,6 +385,31 @@ function addLink() {
 linkBtn.addEventListener('click', (e) => {
     e.preventDefault(); // Prevent default button action
     addLink();
+});
+
+// Event Listener for Bullet List Button
+bulletListBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    noteContentEditor.focus();
+    try {
+        document.execCommand('insertUnorderedList', false, null);
+    } catch (err) {
+        console.error("Error executing insertUnorderedList command:", err);
+    }
+    // No need to re-focus here as execCommand should handle it,
+    // but if focus is lost, call noteContentEditor.focus() again.
+});
+
+// Event Listener for Number List Button
+numberListBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    noteContentEditor.focus();
+    try {
+        document.execCommand('insertOrderedList', false, null);
+    } catch (err) {
+        console.error("Error executing insertOrderedList command:", err);
+    }
+    // No need to re-focus here as execCommand should handle it.
 });
 
 // --- Export to CSV ---
