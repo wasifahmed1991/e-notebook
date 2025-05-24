@@ -37,8 +37,8 @@ body {
 
 /* Main Application Container */
 .container {
-    width: 80%;
-    max-width: 1200px;
+    width: 90%; /* Changed from 80% */
+    max-width: 1400px; /* Changed from 1200px */
     min-height: 80vh;
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(10px);
@@ -48,6 +48,8 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.18);
     display: flex;
     overflow: hidden;
+    margin-left: auto; /* Added for forceful centering */
+    margin-right: auto; /* Added for forceful centering */
 }
 
 /* Header */
@@ -69,13 +71,27 @@ header h1 {
 
 #date-time-display {
     text-align: center;
-    color: #4A4A4A; /* Match the new heading color, or a slightly lighter shade */
-    font-size: 0.9em; /* Adjust as needed */
-    margin-top: -10px; /* Adjust to position nicely below the h1 */
-    margin-bottom: 10px; /* Add some space before the main container */
-    /* Consider a less prominent text shadow than the main heading, or none */
-    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.1); /* Very subtle shadow if background is darkish */
+    color: #4A4A4A; /* Existing */
+    font-size: 0.9em; /* Existing, or adjust if needed */
+    margin-top: -10px; /* Existing */
+    margin-bottom: 10px; /* Existing */
+    font-weight: 500; /* Added: Make font slightly bolder */
+    text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.15); /* Slightly adjusted shadow for better definition */
+    /* transition: color 0.5s ease; /* Optional: for smooth color transition if we animate color */
 }
+
+/* Animation for seconds tick */
+@keyframes time-tick-animation {
+    0% { opacity: 0.7; transform: scale(0.98); }
+    50% { opacity: 1; transform: scale(1.02); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+#time-seconds.time-tick {
+    display: inline-block; /* Important for transform to work correctly */
+    animation: time-tick-animation 0.4s ease-out;
+}
+
 
 /* Background Animation Keyframes */
 @keyframes animateBackgroundGradient {

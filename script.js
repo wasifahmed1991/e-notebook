@@ -270,12 +270,29 @@ function updateDateTime() {
 
     const now = new Date();
     const optionsDate = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-    const dateString = now.toLocaleDateString(undefined, optionsDate); // Uses browser's default locale
+    const dateString = now.toLocaleDateString(undefined, optionsDate);
 
-    const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
-    const timeString = now.toLocaleTimeString(undefined, optionsTime); // Uses browser's default locale
+    // Format time components separately to isolate seconds
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    
+    // Construct the time string with a span around seconds
+    // Using innerHTML now for dateTimeDisplay
+    dateTimeDisplay.innerHTML = `${dateString}, ${hours}:${minutes}:<span id="time-seconds">${seconds}</span>`;
 
-    dateTimeDisplay.textContent = `${dateString}, ${timeString}`;
+    // Trigger animation on the seconds span
+    const secondsSpan = document.getElementById('time-seconds');
+    if (secondsSpan) {
+        secondsSpan.classList.add('time-tick');
+        // Remove the class after animation to allow re-triggering
+        // Use a timeout slightly longer than the animation duration
+        setTimeout(() => {
+            if (secondsSpan) { // Check if still exists (e.g. if display was cleared)
+                secondsSpan.classList.remove('time-tick');
+            }
+        }, 400); // Matches animation duration
+    }
 }
 
 // Initial Call and Interval for Date/Time
