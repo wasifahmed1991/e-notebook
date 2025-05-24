@@ -7,9 +7,12 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoVBl5gI9vDRceUtBLMPWSGUISacIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
     <script src="script.js" defer></script>
 </head>
 <body>
+    <div id="particles-js"></div>
     <header>
         <h1>GlassNotes</h1>
     </header>
@@ -28,10 +31,19 @@
                     <button id="export-csv-btn">Export CSV</button>
                     <button id="export-xlsx-btn">Export XLSX</button>
                     <button id="export-pdf-btn">Export PDF</button>
+                    <button id="export-jpg-btn">Export JPG</button>
+                    <button id="export-png-btn">Export PNG</button>
                 </div>
                 <div id="note-content-editor" contenteditable="true"></div>
             </div>
         </div>
     </main>
+    <footer>
+        <p>
+            Made with <span class="heart">♥</span> by 
+            <a href="https://upshotfirm.com/wasif-ahmed/" target="_blank">Wasif Ahmed</a> | 
+            <a href="https://upshotfirm.com/" target="_blank">Upshot Firm</a>
+        </p>
+    </footer>
 </body>
 </html>

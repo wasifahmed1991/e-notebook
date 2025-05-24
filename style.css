@@ -1,14 +1,26 @@
+#particles-js {
+    position: fixed; /* Or absolute, depending on desired scroll behavior with page content */
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1; /* Ensure it's behind other content */
+    /* The background of the particles div itself should be transparent
+       if the body already has the gradient. particles.js draws on a canvas inside this div. */
+}
+
 /* Body Styling */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(to right top, #65dfc9, #6cdbeb);
     margin: 0;
-    padding: 0;
+    padding: 20px 0; /* Add some padding top and bottom */
     min-height: 100vh;
     display: flex;
-    flex-direction: column; /* Align header and container vertically */
-    justify-content: center;
+    flex-direction: column;
+    /* justify-content: center; /* Remove or change for scrollable content */
     align-items: center;
+    box-sizing: border-box; /* Include padding in height calculation */
 }
 
 /* Main Application Container */
@@ -147,6 +159,7 @@ header h1 {
     margin-bottom: 10px;
     display: flex;
     gap: 5px;
+    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
 }
 
 #editor-toolbar button {
@@ -162,4 +175,214 @@ header h1 {
 
 #editor-toolbar button:hover {
     background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Light Theme */
+.light-theme body {
+    color: #333;
+    background: #f0f0f0; /* Light background for the page */
+}
+
+.light-theme header h1 {
+    color: #333;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.light-theme #new-note-btn {
+    color: #333;
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.light-theme #new-note-btn:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.light-theme .delete-note-btn {
+    color: #fff; /* Keep text white for contrast on red background */
+    background: rgba(200, 50, 50, 0.7);
+}
+
+.light-theme .delete-note-btn:hover {
+    background: rgba(180, 30, 30, 0.8);
+}
+
+.light-theme #editor-toolbar button {
+    color: #333;
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.light-theme #editor-toolbar button:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.light-theme #note-title-input {
+    color: #333;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.light-theme #note-title-input::placeholder {
+    color: rgba(100, 100, 100, 0.8);
+}
+
+.light-theme #note-content-editor {
+    color: #333;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.light-theme .note-item-title {
+    color: #333;
+}
+
+.light-theme .note-item {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.light-theme .note-item:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.light-theme .container {
+    background: rgba(240, 240, 240, 0.8); /* Lighter container background */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px); /* Safari fallback */
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1); /* Softer shadow */
+}
+
+.light-theme #notes-sidebar {
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.light-theme #editor-toolbar #export-jpg-btn, .light-theme #editor-toolbar #export-png-btn {
+    color: #333;
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.light-theme #editor-toolbar #export-jpg-btn:hover, .light-theme #editor-toolbar #export-png-btn:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design Adjustments */
+@media (max-width: 768px) {
+    body {
+        align-items: flex-start; /* Align content to the top on smaller screens */
+        justify-content: flex-start; /* Justify content to the top */
+        padding: 10px 0; /* Reduce padding on smaller screens */
+    }
+
+    .container {
+        flex-direction: column;
+        width: 95%;
+        min-height: auto; /* Allow height to be determined by content */
+        margin-top: 10px; /* Add some margin to the top */
+        margin-bottom: 10px; /* Add some margin to the bottom */
+    }
+
+    #notes-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+        max-height: 200px; /* Adjust as needed, e.g., for more/less notes visibility */
+        overflow-y: auto;
+        padding: 10px; /* Adjust padding */
+    }
+
+    .light-theme #notes-sidebar {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    #note-editor-container {
+        width: 100%;
+        padding: 10px; /* Adjust padding */
+        min-height: 300px; /* Ensure editor has a decent minimum height */
+    }
+    
+    #note-content-editor {
+        min-height: 200px; /* Adjust content editor min height for mobile */
+    }
+
+    header h1 {
+        font-size: 2em;
+        padding: 15px 0; /* Adjust header padding */
+    }
+
+    #editor-toolbar {
+        gap: 8px; /* Slightly increase gap for wrapped buttons for better touch target */
+    }
+
+    #editor-toolbar button {
+        padding: 10px 10px; /* Adjust button padding for touch targets */
+        font-size: 0.85em; /* Slightly reduce font size if necessary */
+    }
+
+    #new-note-btn {
+        padding: 12px 15px; /* Adjust new note button padding for touch */
+        font-size: 0.95em;
+    }
+}
+
+/* Footer Styling */
+footer {
+    text-align: center;
+    padding: 20px 0;
+    margin-top: auto; /* Pushes footer to bottom if body is flex container and content is short */
+    width: 100%;
+    color: #fff; /* Default color for dark theme */
+}
+
+footer p {
+    margin: 0;
+    font-size: 0.9em;
+}
+
+footer a {
+    color: #fff; /* Default link color for dark theme */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: #65dfc9; /* A highlight color from the theme */
+}
+
+footer .heart {
+    color: red; /* Or a pinkish color like #ff7b7b */
+    font-size: 1.2em;
+}
+
+/* Light theme adjustments for footer */
+.light-theme footer {
+    color: #333; /* Dark text for light theme */
+}
+
+.light-theme footer a {
+    color: #1a73e8; /* A standard link blue for light theme */
+}
+
+.light-theme footer a:hover {
+    color: #005cb2; /* Darker blue on hover */
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.8em; /* Further reduce header font size on very small screens */
+    }
+    
+    #notes-sidebar {
+        max-height: 150px; /* Further reduce sidebar height */
+    }
+
+    #editor-toolbar button {
+        padding: 8px 8px;
+        font-size: 0.8em;
+    }
+     #new-note-btn {
+        padding: 10px 12px;
+        font-size: 0.9em;
+    }
 }
