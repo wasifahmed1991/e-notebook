@@ -256,6 +256,44 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
         console.warn("tsParticles library not found. Background particle animation will not load.");
     }
+
+    // Ripple click animation on background
+    document.body.addEventListener('click', function(event) {
+        // Target check: only proceed if the click is on designated background areas
+        const target = event.target;
+        if (target.id === 'particles-bg' || 
+            target.tagName === 'BODY' || 
+            target.tagName === 'MAIN' || 
+            target.classList.contains('container') ||
+            target === document.documentElement // Also consider clicks on html element (if body doesn't fill viewport)
+           ) {
+            // Further check to avoid triggering on scrollbars if possible (though this is hard to do reliably)
+            // and to avoid if an interactive element within these areas was somehow missed by the above.
+            if (target.closest('button, a, input, [contenteditable], #notes-sidebar, #note-editor-container, header, footer')) {
+                 // If the click was on or inside an interactive element that's a child of a valid background target, ignore.
+                if (target.tagName !== 'MAIN' && !target.classList.contains('container') && target.id !== 'particles-bg' && target.tagName !== 'BODY' && target.tagName !== 'HTML') {
+                    return;
+                }
+            }
+
+
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple-click-effect');
+            document.body.appendChild(ripple);
+
+            // Set position of the ripple
+            // clientX/clientY are viewport coordinates.
+            // pageX/pageY include scrolling, but for fixed ripple, clientX/Y is fine.
+            ripple.style.left = event.clientX + 'px';
+            ripple.style.top = event.clientY + 'px';
+            
+            // Remove the ripple element after the animation completes
+            ripple.addEventListener('animationend', () => {
+                ripple.remove();
+            });
+
+        }
+    });
 });
 
 // --- Rich Text Editing ---
