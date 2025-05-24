@@ -1,7 +1,9 @@
 /* Body Styling */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to right top, #a0c4ff, #7fffd4, #d8b4fe);
+    background: linear-gradient(to right, #a0c4ff, #7fffd4, #d8b4fe, #7fffd4, #a0c4ff);
+    background-size: 400% 100%;
+    animation: animatedGradient 15s ease infinite;
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -9,6 +11,12 @@ body {
     flex-direction: column; /* Align header and container vertically */
     justify-content: center;
     align-items: center;
+}
+
+@keyframes animatedGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 main {
@@ -61,6 +69,9 @@ header h1 {
     overflow-y: auto;  /* Add scrollbar when content exceeds max-height */
     padding-right: 5px; /* Prevent scrollbar from overlapping content too closely */
     margin-bottom: 10px; /* Space before the "New Note" button */
+    /* Firefox scrollbar styling */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.25) rgba(0, 0, 0, 0.05); /* thumb color track color */
 }
 
 /* New Note Button */
@@ -354,25 +365,45 @@ footer a:hover {
 /* Click Particle Effect Styling */
 .click-particle {
     position: fixed;
-    width: 3px;
-    height: 3px;
+    width: 5px;  /* Increased size */
+    height: 5px; /* Increased size */
     background-color: #FFFACD; /* Lemon Chiffon */
     border-radius: 50%;
     pointer-events: none;
     z-index: 1; /* Slightly above ripple, if ripple is 0 or less */
-    opacity: 0.7; /* Initial opacity */
+    opacity: 1; /* Increased initial opacity */
     /* transform is set by animation */
-    animation: firefly-effect 0.7s ease-out forwards;
+    animation: firefly-effect 1s ease-out forwards; /* Increased duration */
 }
 
 @keyframes firefly-effect {
     0% {
         transform: translate(-50%, -50%) scale(1); /* Start at click, centered */
-        opacity: 0.7;
+        opacity: 1; /* Match initial opacity */
     }
     100% {
         /* Use CSS custom properties for varied outward movement */
-        transform: translate(calc(-50% + var(--random-x, 0) * 30px), calc(-50% + var(--random-y, 0) * 30px)) scale(0);
+        transform: translate(calc(-50% + var(--random-x, 0) * 60px), calc(-50% + var(--random-y, 0) * 60px)) scale(0); /* Increased movement spread */
         opacity: 0;
     }
+}
+
+/* Custom Scrollbar Styling for #notes-list */
+/* For WebKit browsers (Chrome, Safari, Edge) */
+#notes-list::-webkit-scrollbar {
+    width: 10px; /* Width of the scrollbar */
+}
+
+#notes-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05); /* Light grey track */
+    border-radius: 4px; /* Rounded corners for the track */
+}
+
+#notes-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.25); /* Darker grey thumb */
+    border-radius: 4px; /* Rounded corners for the thumb */
+}
+
+#notes-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.4); /* Even darker grey thumb on hover */
 }

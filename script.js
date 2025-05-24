@@ -329,10 +329,7 @@ document.addEventListener('DOMContentLoaded', async () => {
  */
 function formatDoc(command, value = null) {
     // Ensure the editor has focus to apply formatting correctly.
-    // However, clicking a button outside the contenteditable might shift focus.
-    // execCommand typically works on the document's active editable element or selection.
-    // If issues arise, explicitly focusing might be needed: noteContentEditor.focus();
-    // but that can also be disruptive if not handled carefully.
+    noteContentEditor.focus(); // Explicitly focus BEFORE execCommand
     try {
         document.execCommand(command, false, value);
     } catch (e) {
@@ -390,26 +387,13 @@ linkBtn.addEventListener('click', (e) => {
 // Event Listener for Bullet List Button
 bulletListBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    noteContentEditor.focus();
-    try {
-        document.execCommand('insertUnorderedList', false, null);
-    } catch (err) {
-        console.error("Error executing insertUnorderedList command:", err);
-    }
-    // No need to re-focus here as execCommand should handle it,
-    // but if focus is lost, call noteContentEditor.focus() again.
+    formatDoc('insertUnorderedList');
 });
 
 // Event Listener for Number List Button
 numberListBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    noteContentEditor.focus();
-    try {
-        document.execCommand('insertOrderedList', false, null);
-    } catch (err) {
-        console.error("Error executing insertOrderedList command:", err);
-    }
-    // No need to re-focus here as execCommand should handle it.
+    formatDoc('insertOrderedList');
 });
 
 // --- Export to CSV ---
