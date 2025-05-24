@@ -6,11 +6,10 @@ const notesListDiv = document.getElementById('notes-list'); // Corrected: notes-
 const boldBtn = document.getElementById('bold-btn');
 const italicBtn = document.getElementById('italic-btn');
 const underlineBtn = document.getElementById('underline-btn');
+const linkBtn = document.getElementById('link-btn'); // Added linkBtn
 const exportCsvBtn = document.getElementById('export-csv-btn');
 const exportXlsxBtn = document.getElementById('export-xlsx-btn');
 const exportPdfBtn = document.getElementById('export-pdf-btn');
-const exportJpgBtn = document.getElementById('export-jpg-btn');
-const exportPngBtn = document.getElementById('export-png-btn');
 
 // Notes Array
 let notes = [];
@@ -299,6 +298,33 @@ underlineBtn.addEventListener('click', (e) => {
     formatDoc('underline');
 });
 
+// Function to add a link
+function addLink() {
+    // Ensure the editor has focus before attempting to create a link
+    // This is important as clicking the button might remove focus from the editor
+    noteContentEditor.focus(); 
+    const url = prompt('Enter the URL (e.g., https://www.example.com):');
+    if (url) { // Check if the user provided a URL
+        try {
+            // Use 'createLink' command to make the selected text a hyperlink
+            // The third argument `url` is the URL for the link.
+            document.execCommand('createLink', false, url);
+        } catch (e) {
+            console.error("Error executing createLink command:", e);
+            alert("Sorry, an error occurred while trying to add the link.");
+        }
+    }
+    // No need to call noteContentEditor.focus() again here unless specific issues arise,
+    // as execCommand should ideally preserve focus or manage it appropriately.
+    // However, if focus is lost, it can be added back.
+}
+
+// Event Listener for Add Link Button
+linkBtn.addEventListener('click', (e) => {
+    e.preventDefault(); // Prevent default button action
+    addLink();
+});
+
 // --- Export to CSV ---
 
 /**
@@ -464,115 +490,3 @@ function exportNoteToPDF() {
 
 // Event Listener for Export PDF Button
 exportPdfBtn.addEventListener('click', exportNoteToPDF);
-
-// --- Export to Image (JPG/PNG) ---
-
-/**
- * Helper function to export the current note to an image (JPG or PNG).
- * @param {string} format - 'jpeg' or 'png'.
- */
-async function exportNoteToImage(format) {
-    const exportButton = format === 'jpeg' ? exportJpgBtn : exportPngBtn;
-    const originalButtonText = exportButton.textContent;
-
-    if (typeof html2canvas === 'undefined') {
-        alert("Image export functionality is currently unavailable. Please ensure you are online or try again later.");
-        return;
-    }
-
-    const noteTitle = noteTitleInput.value.trim();
-    const noteContentHTML = noteContentEditor.innerHTML.trim();
-
-    if ((!currentNoteId && (!noteTitle && !noteContentHTML)) || (currentNoteId && !noteTitle && !noteContentHTML)) {
-        alert("No note selected or the current note is empty.");
-        return;
-    }
-
-    // Create a temporary element to render the note for capturing
-    const elementToCapture = document.createElement('div');
-    // Style it to be visually similar to the editor but suitable for export
-    elementToCapture.style.width = '800px'; // Or dynamically set based on an element
-    elementToCapture.style.padding = '20px';
-    elementToCapture.style.backgroundColor = '#FFFFFF'; // White background is crucial
-    elementToCapture.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"; // Match editor font
-
-    const titleElement = document.createElement('h1');
-    titleElement.textContent = noteTitle || "Untitled Note";
-    titleElement.style.color = '#000000'; // Explicit black for title
-    titleElement.style.fontSize = '24px'; // Match PDF export style
-    titleElement.style.marginBottom = '15px';
-
-    const contentWrapper = document.createElement('div');
-    contentWrapper.innerHTML = noteContentHTML;
-    contentWrapper.style.color = '#333333'; // Explicit dark gray for content
-    contentWrapper.style.fontSize = '16px'; // Match editor font size
-    contentWrapper.style.lineHeight = '1.6'; // Match editor line height
-    // Ensure that block elements within contentWrapper take full width
-    // and don't inherit strange flex properties if any are present.
-    Array.from(contentWrapper.children).forEach(child => {
-        if (child instanceof HTMLElement) {
-            child.style.display = 'block'; // Or reset other relevant styles
-        }
-    });
-
-
-    elementToCapture.appendChild(titleElement);
-    elementToCapture.appendChild(contentWrapper);
-
-    // Temporarily append to body to make it renderable by html2canvas, but keep it off-screen
-    elementToCapture.style.position = 'absolute';
-    elementToCapture.style.left = '-9999px';
-    elementToCapture.style.top = '-9999px';
-    document.body.appendChild(elementToCapture);
-
-    exportButton.disabled = true;
-    exportButton.textContent = 'Generating...';
-
-    try {
-        const canvas = await html2canvas(elementToCapture, {
-            scale: 2, // Higher scale for better quality
-            useCORS: true, // If images from other domains are ever used
-            backgroundColor: '#ffffff', // Ensure background is white for JPG
-            logging: false
-        });
-
-        const imageDataURL = canvas.toDataURL('image/' + format, format === 'jpeg' ? 0.92 : 1.0); // Quality for JPG
-
-        const link = document.createElement('a');
-        let filename = noteTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'note';
-        filename += '.' + (format === 'jpeg' ? 'jpg' : 'png');
-
-        link.href = imageDataURL;
-        link.download = filename;
-        document.body.appendChild(link); // Required for Firefox
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(imageDataURL); // Clean up
-
-    } catch (error) {
-        console.error(`Error exporting to ${format.toUpperCase()}:`, error);
-        alert(`An error occurred while exporting to ${format.toUpperCase()}. Please try again.`);
-    } finally {
-        document.body.removeChild(elementToCapture); // Clean up the temporary element
-        exportButton.disabled = false;
-        exportButton.textContent = originalButtonText;
-    }
-}
-
-/**
- * Exports the current note to a JPG file.
- */
-function exportNoteToJPG() {
-    exportNoteToImage('jpeg');
-}
-
-/**
- * Exports the current note to a PNG file.
- */
-function exportNoteToPNG() {
-    exportNoteToImage('png');
-}
-
-// Event Listeners for Export Image Buttons
-exportJpgBtn.addEventListener('click', exportNoteToJPG);
-exportPngBtn.addEventListener('click', exportNoteToPNG);
