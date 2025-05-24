@@ -1,7 +1,7 @@
 /* Body Styling */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to right top, #65dfc9, #6cdbeb);
+    background: linear-gradient(to right top, #5cacee, #2e86c1);
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -9,6 +9,13 @@ body {
     flex-direction: column; /* Align header and container vertically */
     justify-content: center;
     align-items: center;
+}
+
+main {
+    width: 100%; /* Ensure main takes full available width */
+    display: flex;
+    justify-content: center; /* Center .container within main */
+    padding: 20px 0; /* Optional: Add some padding */
 }
 
 /* Main Application Container */
@@ -29,7 +36,7 @@ body {
 /* Header */
 header h1 {
     text-align: center;
-    color: #fff;
+    color: #333333;
     padding: 20px 0;
     font-size: 2.5em;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
@@ -50,7 +57,7 @@ header h1 {
     padding: 10px 15px;
     margin-bottom: 20px;
     background: rgba(255, 255, 255, 0.2);
-    color: white;
+    color: #333333;
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
     cursor: pointer;
@@ -59,7 +66,7 @@ header h1 {
 }
 
 #new-note-btn:hover {
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 /* Note Editor Container */
@@ -79,12 +86,12 @@ header h1 {
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
     font-size: 1.2em;
-    color: #fff;
+    color: #333333;
     outline: none;
 }
 
 #note-title-input::placeholder {
-    color: rgba(220, 220, 220, 0.8);
+    color: #666666;
 }
 
 /* Note Content Editor */
@@ -94,7 +101,7 @@ header h1 {
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
-    color: #fff;
+    color: #333333;
     outline: none;
     min-height: 300px;
     line-height: 1.6;
@@ -115,7 +122,7 @@ header h1 {
 }
 
 .note-item:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.35);
 }
 
 .note-item-title { /* Create a span for the title if not already done, to help with flex layout */
@@ -123,7 +130,7 @@ header h1 {
     overflow: hidden; /* For long titles */
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: #fff; /* Ensure title text is visible */
+    color: #333333; /* Ensure title text is visible */
 }
 
 .delete-note-btn {
@@ -152,7 +159,7 @@ header h1 {
 #editor-toolbar button {
     padding: 8px 12px; /* Slightly smaller than new-note-btn */
     background: rgba(255, 255, 255, 0.2);
-    color: white;
+    color: #333333;
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 6px; /* Slightly smaller radius */
     cursor: pointer;
@@ -161,5 +168,124 @@ header h1 {
 }
 
 #editor-toolbar button:hover {
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Responsive adjustments for tablets and below */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        width: 95%;
+        min-height: 0; /* Allow container to shrink */
+        margin-top: 10px; /* Add some space from header */
+        margin-bottom: 10px; /* Add some space at bottom */
+    }
+
+    #notes-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+        margin-bottom: 15px;
+        padding: 15px; /* Adjust padding */
+    }
+
+    #note-editor-container {
+        width: 100%;
+        padding: 15px; /* Adjust padding */
+    }
+
+    header h1 {
+        font-size: 2em; /* Reduced from 2.5em */
+    }
+
+    #note-title-input {
+        font-size: 1.1em; /* Reduced from 1.2em */
+    }
+
+    #note-content-editor {
+        min-height: 250px; /* Reduced from 300px */
+    }
+
+    #editor-toolbar {
+        flex-wrap: wrap;
+        gap: 8px; /* Add slightly more gap for wrapped items */
+    }
+
+    /* Adjust button padding and font for smaller screens */
+    #new-note-btn,
+    #editor-toolbar button {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+
+    main {
+        padding: 10px 0; /* Reduce padding for main on smaller screens */
+    }
+}
+
+/* Responsive adjustments for smaller mobile screens */
+@media (max-width: 480px) {
+    .container {
+        width: 100%;
+        border-radius: 0; /* Full screen feel */
+        margin-top: 0;
+        margin-bottom: 0;
+        box-shadow: none; /* Optional: remove shadow for simpler look */
+    }
+
+    header {
+        padding: 10px 0; /* Reduce header padding */
+    }
+
+    header h1 {
+        font-size: 1.75em; /* Reduced from 2em */
+    }
+
+    #notes-sidebar {
+        padding: 10px;
+        margin-bottom: 10px; /* Reduce margin */
+    }
+
+    #note-editor-container {
+        padding: 10px;
+    }
+
+    #note-title-input {
+        font-size: 1em; /* Reduced from 1.1em */
+        padding: 8px; /* Adjust padding */
+    }
+
+    #note-content-editor {
+        min-height: 200px; /* Reduced from 250px */
+        font-size: 0.95em; /* Adjust content font size */
+    }
+
+    /* Further adjust button padding and font for very small screens */
+    #new-note-btn,
+    #editor-toolbar button {
+        padding: 6px 10px;
+        font-size: 0.85em;
+    }
+
+    #editor-toolbar {
+        gap: 5px; /* Reduce gap for toolbar buttons */
+    }
+
+    main {
+        padding: 0; /* Remove padding as container is full width */
+    }
+
+    body {
+        /* Ensure content starts from the top, especially when container is full height */
+        justify-content: flex-start; 
+    }
+}
+
+#particles-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Ensure it's behind all other content */
 }

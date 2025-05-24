@@ -9,6 +9,8 @@ const underlineBtn = document.getElementById('underline-btn');
 const exportCsvBtn = document.getElementById('export-csv-btn');
 const exportXlsxBtn = document.getElementById('export-xlsx-btn');
 const exportPdfBtn = document.getElementById('export-pdf-btn');
+const exportJpgBtn = document.getElementById('export-jpg-btn');
+const exportPngBtn = document.getElementById('export-png-btn');
 
 // Notes Array
 let notes = [];
@@ -185,8 +187,76 @@ noteContentEditor.addEventListener('input', handleEditorInput);
 
 // --- Initial Load ---
 // Ensure DOM is fully loaded before trying to access elements, especially for `loadNotes`.
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     loadNotes();
+
+    if (typeof tsParticles !== 'undefined') {
+        try {
+            await tsParticles.load({
+                id: "particles-bg", // Matches the div ID in index.html
+                options: {
+                    autoPlay: true,
+                    background: {
+                        color: {
+                            value: 'transparent' // Make canvas transparent to show CSS gradient
+                        },
+                    },
+                    fullScreen: {
+                        enable: true, // Enable fullScreen mode
+                        zIndex: -1     // Make sure canvas is behind other content
+                    },
+                    particles: {
+                        number: {
+                            value: 30, // Low density
+                            density: {
+                                enable: true,
+                                value_area: 800 // Standard area for density calculation
+                            }
+                        },
+                        color: {
+                            value: "#ffffff" // White particles
+                        },
+                        shape: {
+                            type: "circle"
+                        },
+                        opacity: {
+                            value: 0.2 // Particle opacity
+                        },
+                        size: {
+                            value: { min: 1, max: 3 } // Small particles
+                        },
+                        links: {
+                            enable: false // No links between particles
+                        },
+                        move: {
+                            enable: true,
+                            speed: 1, // Slow speed
+                            direction: "none",
+                            random: true,
+                            straight: false,
+                            out_mode: "out",
+                        }
+                    },
+                    interactivity: {
+                        detect_on: "canvas",
+                        events: {
+                            onHover: {
+                                enable: false // Disable hover interactivity
+                            },
+                            onClick: {
+                                enable: false // Disable click interactivity
+                            },
+                        }
+                    },
+                    detectRetina: true // Adjusts for retina displays
+                }
+            });
+        } catch (error) {
+            console.error("Error loading tsParticles:", error);
+        }
+    } else {
+        console.warn("tsParticles library not found. Background particle animation will not load.");
+    }
 });
 
 // --- Rich Text Editing ---
@@ -360,6 +430,10 @@ function exportNoteToPDF() {
     elementToPrint.appendChild(titleElement);
     elementToPrint.appendChild(contentWrapper);
 
+    // Ensure text is visible in PDF by setting explicit colors
+    titleElement.style.color = '#000000'; // Black for title
+    contentWrapper.style.color = '#333333'; // Dark gray for content
+
     // Optional: Add some basic styling for the PDF output
     // titleElement.style.marginBottom = '20px';
     // titleElement.style.fontSize = '24px'; // Example style
@@ -390,3 +464,115 @@ function exportNoteToPDF() {
 
 // Event Listener for Export PDF Button
 exportPdfBtn.addEventListener('click', exportNoteToPDF);
+
+// --- Export to Image (JPG/PNG) ---
+
+/**
+ * Helper function to export the current note to an image (JPG or PNG).
+ * @param {string} format - 'jpeg' or 'png'.
+ */
+async function exportNoteToImage(format) {
+    const exportButton = format === 'jpeg' ? exportJpgBtn : exportPngBtn;
+    const originalButtonText = exportButton.textContent;
+
+    if (typeof html2canvas === 'undefined') {
+        alert("Image export functionality is currently unavailable. Please ensure you are online or try again later.");
+        return;
+    }
+
+    const noteTitle = noteTitleInput.value.trim();
+    const noteContentHTML = noteContentEditor.innerHTML.trim();
+
+    if ((!currentNoteId && (!noteTitle && !noteContentHTML)) || (currentNoteId && !noteTitle && !noteContentHTML)) {
+        alert("No note selected or the current note is empty.");
+        return;
+    }
+
+    // Create a temporary element to render the note for capturing
+    const elementToCapture = document.createElement('div');
+    // Style it to be visually similar to the editor but suitable for export
+    elementToCapture.style.width = '800px'; // Or dynamically set based on an element
+    elementToCapture.style.padding = '20px';
+    elementToCapture.style.backgroundColor = '#FFFFFF'; // White background is crucial
+    elementToCapture.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"; // Match editor font
+
+    const titleElement = document.createElement('h1');
+    titleElement.textContent = noteTitle || "Untitled Note";
+    titleElement.style.color = '#000000'; // Explicit black for title
+    titleElement.style.fontSize = '24px'; // Match PDF export style
+    titleElement.style.marginBottom = '15px';
+
+    const contentWrapper = document.createElement('div');
+    contentWrapper.innerHTML = noteContentHTML;
+    contentWrapper.style.color = '#333333'; // Explicit dark gray for content
+    contentWrapper.style.fontSize = '16px'; // Match editor font size
+    contentWrapper.style.lineHeight = '1.6'; // Match editor line height
+    // Ensure that block elements within contentWrapper take full width
+    // and don't inherit strange flex properties if any are present.
+    Array.from(contentWrapper.children).forEach(child => {
+        if (child instanceof HTMLElement) {
+            child.style.display = 'block'; // Or reset other relevant styles
+        }
+    });
+
+
+    elementToCapture.appendChild(titleElement);
+    elementToCapture.appendChild(contentWrapper);
+
+    // Temporarily append to body to make it renderable by html2canvas, but keep it off-screen
+    elementToCapture.style.position = 'absolute';
+    elementToCapture.style.left = '-9999px';
+    elementToCapture.style.top = '-9999px';
+    document.body.appendChild(elementToCapture);
+
+    exportButton.disabled = true;
+    exportButton.textContent = 'Generating...';
+
+    try {
+        const canvas = await html2canvas(elementToCapture, {
+            scale: 2, // Higher scale for better quality
+            useCORS: true, // If images from other domains are ever used
+            backgroundColor: '#ffffff', // Ensure background is white for JPG
+            logging: false
+        });
+
+        const imageDataURL = canvas.toDataURL('image/' + format, format === 'jpeg' ? 0.92 : 1.0); // Quality for JPG
+
+        const link = document.createElement('a');
+        let filename = noteTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'note';
+        filename += '.' + (format === 'jpeg' ? 'jpg' : 'png');
+
+        link.href = imageDataURL;
+        link.download = filename;
+        document.body.appendChild(link); // Required for Firefox
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(imageDataURL); // Clean up
+
+    } catch (error) {
+        console.error(`Error exporting to ${format.toUpperCase()}:`, error);
+        alert(`An error occurred while exporting to ${format.toUpperCase()}. Please try again.`);
+    } finally {
+        document.body.removeChild(elementToCapture); // Clean up the temporary element
+        exportButton.disabled = false;
+        exportButton.textContent = originalButtonText;
+    }
+}
+
+/**
+ * Exports the current note to a JPG file.
+ */
+function exportNoteToJPG() {
+    exportNoteToImage('jpeg');
+}
+
+/**
+ * Exports the current note to a PNG file.
+ */
+function exportNoteToPNG() {
+    exportNoteToImage('png');
+}
+
+// Event Listeners for Export Image Buttons
+exportJpgBtn.addEventListener('click', exportNoteToJPG);
+exportPngBtn.addEventListener('click', exportNoteToPNG);
