@@ -394,25 +394,3 @@ footer .heart {
         opacity: 0;
     }
 }
-
-/* Specific styles for export buttons */
-#export-csv-btn {
-    background-color: rgba(100, 190, 120, 0.35); 
-}
-#export-xlsx-btn {
-    background-color: rgba(100, 160, 210, 0.35);
-}
-#export-pdf-btn {
-    background-color: rgba(210, 100, 100, 0.35);
-}
-
-/* Optional: Refined hover states for export buttons */
-#export-csv-btn:hover {
-    background-color: rgba(80, 170, 100, 0.45);
-}
-#export-xlsx-btn:hover {
-    background-color: rgba(80, 140, 190, 0.45);
-}
-#export-pdf-btn:hover {
-    background-color: rgba(190, 80, 80, 0.45);
-}

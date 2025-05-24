@@ -10,10 +10,6 @@ GlassNotes is a sleek, modern web-based notebook application designed for ease o
 *   Notes stored in Browser Local Storage
 *   Live Date & Time Display
 *   Responsive Design for Desktop, Tablet, and Mobile
-*   Export Notes to:
-    *   CSV
-    *   XLSX (Excel)
-    *   PDF (preserving rich text formatting)
 *   Themed Scrollbars
 *   Click Ripple Animation on background
 *   Footer with Attributions
@@ -24,8 +20,6 @@ GlassNotes is a sleek, modern web-based notebook application designed for ease o
 *   CSS3 (including Flexbox, Animations, Media Queries)
 *   JavaScript (ES6+)
 *   External Libraries:
-    *   SheetJS (xlsx.full.min.js) for Excel export
-    *   html2pdf.js for PDF export
     *   tsParticles for background particle animation
 
 ## How to Run/Use
