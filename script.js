@@ -361,46 +361,61 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Ripple Effect Initialization
-    document.body.addEventListener('click', createRipple);
+    document.body.addEventListener('click', createClickEffects); // Renamed listener
 });
 
-function createRipple(event) {
+function createClickEffects(event) { // Renamed function
     // Check if the clicked element or its parents are interactive
     const clickedEl = event.target;
-    // Define interactive selectors: buttons, links, inputs, contenteditable, note items, and the sidebar/editor containers.
-    // Added .delete-note-btn as it's a button within .note-item but needs explicit exclusion if .note-item itself allows ripples.
     const interactiveSelectors = 'button, a, input, [contenteditable="true"], .note-item, .delete-note-btn, #notes-sidebar, #note-editor-container';
 
     if (clickedEl.closest(interactiveSelectors)) {
-        // If the click is on or within an interactive element, do not create a ripple.
         return;
     }
 
-    // Further check: if the click is on something inside the 'header' (like date-time or title)
-    // but not directly the header itself, and it's not caught by above, we might want to avoid it.
-    // However, the current interactiveSelectors should cover buttons/links.
-    // Let's assume for now that if it's not in interactiveSelectors, it's a valid background for a ripple.
-
+    // --- Existing Ripple Creation Logic ---
     const ripple = document.createElement('div');
     ripple.className = 'click-ripple';
-    // Append to body so ripple is positioned relative to the viewport,
-    // allowing it to appear correctly regardless of where the body is scrolled.
     document.body.appendChild(ripple);
 
-    // Size and position the ripple
-    // Make ripple diameter based on a fixed size or a small percentage of viewport larger dimension
-    const rippleSize = Math.max(window.innerWidth, window.innerHeight) * 0.05; // e.g., 5% of larger dimension
+    const rippleSize = Math.max(window.innerWidth, window.innerHeight) * 0.05;
     ripple.style.width = ripple.style.height = `${rippleSize}px`;
-
-    // Position at click coordinates relative to the viewport
-    // Adjust so ripple originates from its center
     ripple.style.left = `${event.clientX - (rippleSize / 2)}px`;
     ripple.style.top = `${event.clientY - (rippleSize / 2)}px`;
 
-    // Remove ripple after animation
     ripple.addEventListener('animationend', () => {
-        if (ripple.parentElement) { // Check if it's still in the DOM
+        if (ripple.parentElement) {
             ripple.remove();
         }
     });
+
+    // --- Firefly Creation Logic ---
+    const numberOfFireflies = Math.floor(Math.random() * 3) + 3; // Create 3 to 5 fireflies
+    for (let i = 0; i < numberOfFireflies; i++) {
+        const firefly = document.createElement('div');
+        firefly.className = 'firefly';
+        document.body.appendChild(firefly); // Append to body
+
+        // Randomize movement for each firefly
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * 20 + 10; // 10-30px distance from click
+        const moveDistance = Math.random() * 15 + 10; // How far it drifts
+
+        // Initial position around the click
+        const initialX = event.clientX + Math.cos(angle) * distance - 2; // -2 for half width
+        const initialY = event.clientY + Math.sin(angle) * distance - 2; // -2 for half height
+
+        firefly.style.left = `${initialX}px`;
+        firefly.style.top = `${initialY}px`;
+
+        // Set CSS custom properties for varied animation paths
+        firefly.style.setProperty('--firefly-translateX', `${(Math.random() - 0.5) * moveDistance}px`);
+        firefly.style.setProperty('--firefly-translateY', `${(Math.random() - 0.5) * moveDistance - (moveDistance/2)}px`); // Tend to move upwards slightly
+
+        firefly.addEventListener('animationend', () => {
+            if (firefly.parentElement) { // Check if still in DOM
+                firefly.remove();
+            }
+        });
+    }
 }

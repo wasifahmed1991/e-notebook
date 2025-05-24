@@ -30,8 +30,7 @@ body {
     width: 100%; /* Explicitly set width */
     display: flex;
     flex-direction: column; /* Align header and container vertically */
-    /* justify-content: center; /* Changed from center to flex-start for more typical top-alignment */
-    justify-content: flex-start; 
+    justify-content: center; /* Changed from flex-start */
     align-items: center; /* This should center .container */
     color: #333; /* Default dark text color */
 }
@@ -246,6 +245,35 @@ footer .heart {
     /* Firefox scrollbar styling */
     scrollbar-width: thin;
     scrollbar-color: rgba(164, 132, 233, 0.7) rgba(255, 255, 255, 0.1); /* thumb track */
+}
+
+/* Firefly Effect Styling */
+.firefly {
+    position: absolute;
+    width: 4px; /* Small size */
+    height: 4px;
+    background-color: #FFD700; /* Gold-like color */
+    border-radius: 50%;
+    box-shadow: 0 0 6px 2px #FFD700; /* Glowing effect */
+    pointer-events: none; /* No interaction with fireflies */
+    opacity: 0; /* Start invisible, fade in then out */
+    animation: firefly-effect 0.8s ease-out;
+    z-index: 1000; /* Ensure visibility above ripple if desired, or same z-index */
+}
+
+@keyframes firefly-effect {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) translate(0, 0);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2) translate(var(--firefly-translateX, 0px), var(--firefly-translateY, -10px)); /* Move slightly */
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5) translate(calc(var(--firefly-translateX, 0px) * 2), calc(var(--firefly-translateY, -10px) * 2)); /* Continue movement while fading */
+    }
 }
 
 /* Scrollbar styling for WebKit browsers */
