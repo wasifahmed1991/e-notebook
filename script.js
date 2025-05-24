@@ -9,6 +9,8 @@ const underlineBtn = document.getElementById('underline-btn');
 const exportCsvBtn = document.getElementById('export-csv-btn');
 const exportXlsxBtn = document.getElementById('export-xlsx-btn');
 const exportPdfBtn = document.getElementById('export-pdf-btn');
+const exportJpgBtn = document.getElementById('export-jpg-btn');
+const exportPngBtn = document.getElementById('export-png-btn');
 
 // Notes Array
 let notes = [];
@@ -187,6 +189,68 @@ noteContentEditor.addEventListener('input', handleEditorInput);
 // Ensure DOM is fully loaded before trying to access elements, especially for `loadNotes`.
 document.addEventListener('DOMContentLoaded', () => {
     loadNotes();
+
+    // Initialize Particles.js
+    if (typeof particlesJS !== 'undefined') {
+        particlesJS('particles-js', {
+            "particles": {
+                "number": {
+                    "value": 50, // Low number of particles
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#ffffff" // Particle color
+                },
+                "shape": {
+                    "type": "circle",
+                },
+                "opacity": {
+                    "value": 0.15, // Around 10-15% opacity for particles
+                    "random": true,
+                    "anim": {
+                        "enable": false // No animation for opacity change
+                    }
+                },
+                "size": {
+                    "value": 3, // Small particle size
+                    "random": true,
+                    "anim": {
+                        "enable": false // No animation for size change
+                    }
+                },
+                "line_linked": {
+                    "enable": false // No lines connecting particles
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 1, // Slow speed
+                    "direction": "none",
+                    "random": true,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": false // No hover events
+                    },
+                    "onclick": {
+                        "enable": false // No click events
+                    },
+                    "resize": true
+                }
+            },
+            "retina_detect": true
+        });
+    } else {
+        console.warn("particlesJS not loaded, skipping particle background initialization.");
+    }
 });
 
 // --- Rich Text Editing ---
@@ -346,24 +410,34 @@ function exportNoteToPDF() {
     const noteTitle = noteTitleInput.value.trim();
     const noteContentHTML = noteContentEditor.innerHTML.trim();
 
-    if ((!currentNoteId && (!noteTitle && !noteContentHTML)) || (currentNoteId && !noteTitle && !noteContentHTML)) {
+    // Simplified check for empty note
+    if (!noteTitle && !noteContentHTML) {
         alert("No note selected or the current note is empty.");
         return;
     }
 
     const elementToPrint = document.createElement('div');
+    elementToPrint.style.color = '#000'; // Ensure text is black
+    elementToPrint.style.backgroundColor = '#fff'; // Ensure background is white
+
     const titleElement = document.createElement('h1');
     titleElement.textContent = noteTitle || "Untitled Note"; // Provide a default if title is empty
+    titleElement.style.color = '#000';
+    titleElement.style.marginBottom = '20px';
+    titleElement.style.fontSize = '24px';
+
     const contentWrapper = document.createElement('div');
     contentWrapper.innerHTML = noteContentHTML;
+    contentWrapper.style.color = '#000';
+    contentWrapper.style.fontSize = '12px';
+
+    // Ensure all child elements within contentWrapper also have black text color
+    contentWrapper.querySelectorAll('*').forEach(el => {
+        el.style.color = '#000';
+    });
 
     elementToPrint.appendChild(titleElement);
     elementToPrint.appendChild(contentWrapper);
-
-    // Optional: Add some basic styling for the PDF output
-    // titleElement.style.marginBottom = '20px';
-    // titleElement.style.fontSize = '24px'; // Example style
-    // contentWrapper.style.fontSize = '12px'; // Example style
 
     const filename = (noteTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase() || "note") + ".pdf";
     const opt = {
@@ -390,3 +464,97 @@ function exportNoteToPDF() {
 
 // Event Listener for Export PDF Button
 exportPdfBtn.addEventListener('click', exportNoteToPDF);
+
+// --- Export to Image (JPG/PNG) ---
+
+/**
+ * Exports the current note editor content as an image (JPG or PNG).
+ * @param {string} format - The image format ('jpeg' or 'png').
+ */
+function exportNoteAsImage(format) { // format is 'jpeg' or 'png'
+    if (typeof html2canvas === 'undefined') {
+        alert("Image export functionality is currently unavailable. Please check your internet connection or try again later.");
+        return;
+    }
+
+    const noteTitle = noteTitleInput.value.trim();
+    // const noteContentHTML = noteContentEditor.innerHTML.trim(); // Not directly used for capture area, but good for empty check logic
+
+    if (!noteTitle && !noteContentEditor.innerText.trim()) { // Use innerText for empty check
+        alert("No note selected or the current note is empty.");
+        return;
+    }
+
+    const elementToCapture = document.getElementById('note-editor-container');
+    const originalBackgroundColor = elementToCapture.style.backgroundColor;
+
+    const isLightTheme = document.body.classList.contains('light-theme');
+    // Set a specific background color for the capture.
+    // Using white for general consistency, or light theme background if active.
+    elementToCapture.style.backgroundColor = isLightTheme ? '#f0f0f0' : '#ffffff';
+
+
+    const exportButton = format === 'jpeg' ? exportJpgBtn : exportPngBtn;
+    const originalButtonText = exportButton.textContent;
+    exportButton.disabled = true;
+    exportButton.textContent = 'Generating...';
+
+    html2canvas(elementToCapture, {
+        useCORS: true,
+        scale: 2,
+        backgroundColor: elementToCapture.style.backgroundColor, // Ensure this is applied
+        onclone: (documentCloned) => {
+            const clonedEditorContainer = documentCloned.getElementById('note-editor-container');
+            if (clonedEditorContainer) {
+                // Ensure text within the editor container is black for the screenshot
+                clonedEditorContainer.style.color = '#000';
+                 // Also apply to specific input/editor elements if they don't inherit properly
+                const clonedTitleInput = documentCloned.getElementById('note-title-input');
+                const clonedContentEditor = documentCloned.getElementById('note-content-editor');
+
+                if (clonedTitleInput) {
+                    clonedTitleInput.style.color = '#000';
+                    // If placeholder is styled, ensure it's not an issue or remove for screenshot
+                    // clonedTitleInput.placeholder = ''; // Optional: remove placeholder
+                }
+                if (clonedContentEditor) {
+                    clonedContentEditor.style.color = '#000';
+                }
+
+                // Apply black color to all children elements more broadly
+                clonedEditorContainer.querySelectorAll('*').forEach(el => {
+                   if (el.style) el.style.color = '#000';
+                });
+            }
+        }
+    }).then(canvas => {
+        const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+        const imageDataURL = canvas.toDataURL(mimeType, 0.98); // 0.98 quality for JPEG
+
+        const link = document.createElement('a');
+        let filename = noteTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        if (!filename) {
+            filename = 'note';
+        }
+        filename += `.${format}`;
+
+        link.href = imageDataURL;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(imageDataURL); // Clean up Object URL
+
+    }).catch(err => {
+        console.error(`Error exporting to ${format.toUpperCase()}:`, err);
+        alert(`An error occurred while exporting to ${format.toUpperCase()}. Please try again.`);
+    }).finally(() => {
+        elementToCapture.style.backgroundColor = originalBackgroundColor; // Reset background
+        exportButton.disabled = false;
+        exportButton.textContent = originalButtonText;
+    });
+}
+
+// Event Listeners for Image Export Buttons
+exportJpgBtn.addEventListener('click', () => exportNoteAsImage('jpeg'));
+exportPngBtn.addEventListener('click', () => exportNoteAsImage('png'));
